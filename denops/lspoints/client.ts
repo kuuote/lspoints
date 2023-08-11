@@ -72,7 +72,7 @@ export class LanguageClient {
     });
     await autocmd.group(
       this.denops,
-      "lspoints.internal.notifyChange",
+      "lspoints.internal",
       (helper) => {
         helper.remove("*", "<buffer>");
         helper.define(
