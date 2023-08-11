@@ -24,6 +24,7 @@ export class JsonRpcClient {
   #requestId = 0;
   #requestPool: Record<number, [(r: unknown) => void, (e: unknown) => void]> =
     {};
+  #notifyHandlers: Array<(msg: NotifyMessage) => unknown> = [];
 
   constructor(command: string[]) {
     this.#process = new Deno.Command(command[0], {
@@ -55,7 +56,9 @@ export class JsonRpcClient {
                 delete this.#requestPool[id];
               }
             } else if (isNotifyMessage(chunk)) {
-              // TODO: ちゃんと処理
+              for (const handler of this.#notifyHandlers) {
+                handler(chunk);
+              }
             } else {
               console.log("unresolved chunk");
               console.log(chunk);
@@ -96,5 +99,8 @@ export class JsonRpcClient {
       this.#requestPool[id] = [resolve, reject];
     });
   }
-}
 
+  subscribeNotify(handler: (msg: NotifyMessage) => unknown) {
+    this.#notifyHandlers.push(handler);
+  }
+}
