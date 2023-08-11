@@ -22,6 +22,11 @@ export async function main(denops: Denops) {
         await lock.lock(async () => {
           store.clients[name] = await new LanguageClient(denops, name, command)
             .initialize(options);
+          // TODO: adhoc approachなのでちゃんとしたIF作る
+          store.clients[name].rpcClient.subscribeNotify(async (msg) => {
+            await denops.call("luaeval", "require('lspoints').notify(_A)", msg)
+              .catch(console.log);
+          });
         });
       }
     },
