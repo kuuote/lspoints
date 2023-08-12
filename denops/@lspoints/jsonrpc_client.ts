@@ -39,6 +39,15 @@ export class JsonRpcClient {
         new WritableStream({
           write: (chunk: unknown) => {
             if (isRequestMessage(chunk)) {
+              if (chunk.method === "workspace/configuration") {
+                // TODO: 後で分離
+                this.#sendMessage({
+                  jsonrpc: "2.0",
+                  id: chunk.id,
+                  result: null,
+                });
+                return;
+              }
               console.log("request");
               console.log(chunk);
             } else if (isResponseMessage(chunk)) {
