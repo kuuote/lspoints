@@ -1,6 +1,29 @@
 import { autocmd, Denops } from "../@lspoints/deps/denops.ts";
 import { LSP } from "../@lspoints/deps/lsp.ts";
-import { JsonRpcClient } from "../@lspoints/jsonrpc_client.ts";
+import { JsonRpcClient, Tracer } from "../@lspoints/jsonrpc_client.ts";
+
+async function prettyTracer(clientName: string): Promise<Tracer> {
+  await Deno.mkdir("/tmp/lspoints").catch(() => {});
+  const path = "/tmp/lspoints/" + Date.now() + ".log";
+  async function write(type: string, msg: unknown) {
+    const text = [
+      `☆ ${type} ${clientName}`,
+      JSON.stringify(msg, null, "\t"),
+      "", // last newline
+    ].join("\n");
+    await Deno.writeTextFile(path, text, {
+      append: true,
+    });
+  }
+  return {
+    r: async (msg) => {
+      await write("r", msg);
+    },
+    w: async (msg) => {
+      await write("w", msg);
+    },
+  };
+}
 
 export class LanguageClient {
   name: string;
@@ -18,22 +41,13 @@ export class LanguageClient {
   }
 
   async initialize(options: Record<string, unknown> = {}) {
+    this.rpcClient.subscribeTracer(await prettyTracer(this.name));
     const response = await this.rpcClient.request(
       "initialize",
       {
         processId: Deno.pid,
         // TODO: 後で渡してやれるようにする
-        capabilities: {
-          textDocument: {
-            // publishDiagnostics: {
-            //   tagSupport: {
-            //     valueSet: [1, 2],
-            //   },
-            //   relatedInformation: true,
-            //   dataSupport: true,
-            // },
-          },
-        },
+        capabilities: {},
         initializationOptions: options.initializationOptions,
         rootUri: null,
       } satisfies LSP.InitializeParams,
