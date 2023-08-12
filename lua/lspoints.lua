@@ -4,10 +4,13 @@ local M = {}
 
 function M.notify(msg)
   if msg and msg.method == 'textDocument/publishDiagnostics' then
+    local path = msg.params.uri:gsub('file://', '')
+    local bufnr = vim.fn.bufnr(path)
+
     vim.diagnostic.reset(ns, 0)
     vim.diagnostic.set(
       ns,
-      0,
+      bufnr,
       vim
         .iter(msg.params.diagnostics)
         :map(function(d)
