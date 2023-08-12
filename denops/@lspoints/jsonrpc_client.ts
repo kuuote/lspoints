@@ -17,6 +17,11 @@ function jsonRpcEncode(data: unknown): Uint8Array {
   return concat(headerRaw, buf);
 }
 
+export interface Tracer {
+  r: (msg: unknown) => void | Promise<void>;
+  w: (msg: unknown) => void | Promise<void>;
+}
+
 export class JsonRpcClient {
   #process: Deno.ChildProcess;
   #w: WritableStreamDefaultWriter<Uint8Array>;
@@ -24,7 +29,8 @@ export class JsonRpcClient {
   #requestId = 0;
   #requestPool: Record<number, [(r: unknown) => void, (e: unknown) => void]> =
     {};
-  #notifyHandlers: Array<(msg: NotifyMessage) => unknown> = [];
+  #notifyHandlers: Array<(msg: NotifyMessage) => void | Promise<void>> = [];
+  #tracers: Array<Tracer> = [];
 
   constructor(command: string[]) {
     this.#process = new Deno.Command(command[0], {
@@ -38,6 +44,11 @@ export class JsonRpcClient {
       .pipeTo(
         new WritableStream({
           write: (chunk: unknown) => {
+            if (this.#tracers.length != 0) {
+              for (const t of this.#tracers) {
+                t.r(chunk);
+              }
+            }
             if (isRequestMessage(chunk)) {
               if (chunk.method === "workspace/configuration") {
                 // TODO: 後で分離
@@ -79,6 +90,11 @@ export class JsonRpcClient {
   }
 
   async #sendMessage(msg: unknown) {
+    if (this.#tracers.length != 0) {
+      for (const t of this.#tracers) {
+        t.w(msg);
+      }
+    }
     await this.#w.write(jsonRpcEncode(msg));
   }
 
@@ -109,7 +125,11 @@ export class JsonRpcClient {
     });
   }
 
-  subscribeNotify(handler: (msg: NotifyMessage) => unknown) {
+  subscribeNotify(handler: (msg: NotifyMessage) => void | Promise<void>) {
     this.#notifyHandlers.push(handler);
+  }
+
+  subscribeTracer(tracer: Tracer) {
+    this.#tracers.push(tracer);
   }
 }
