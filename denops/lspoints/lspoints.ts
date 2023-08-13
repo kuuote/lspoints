@@ -1,12 +1,17 @@
+import { PatchableObjectBox } from "../@lspoints/box.ts";
 import { Lock } from "../@lspoints/deps/async.ts";
 import { Denops } from "../@lspoints/deps/denops.ts";
 import { ArrayOrObject } from "../@lspoints/types/message.ts";
 import { LanguageClient } from "./client.ts";
+import { Settings } from "./interface.ts";
 
 const lock = new Lock(null);
 
 export class Lspoints {
   clients: Record<string, LanguageClient> = {};
+  settings: PatchableObjectBox<Settings> = new PatchableObjectBox({
+    clientCapabilites: {},
+  });
 
   async start(
     denops: Denops,
@@ -72,6 +77,11 @@ export class Lspoints {
       throw Error(`client "${name}" is not started`);
     }
     return await client.rpcClient.request(method, params);
+  }
+
+  async loadExtensions(path: string[]) {
+    await lock.lock(async () => {
+    });
   }
 }
 

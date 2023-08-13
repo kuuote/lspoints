@@ -36,6 +36,10 @@ export async function main(denops: Denops) {
       u.assert(params, u.isOptionalOf(isArrayOrObject));
       return await lspoints.request(name, method, params);
     },
+    async loadExtensions(path: unknown) {
+      u.assert(path, u.isArrayOf(u.isString));
+      await lspoints.loadExtensions(path);
+    },
   };
   await autocmd.group(denops, "lspoints.internal", (helper) => {
     helper.remove("*");
