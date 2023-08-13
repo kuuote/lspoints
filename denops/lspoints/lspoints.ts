@@ -2,12 +2,14 @@ import { PatchableObjectBox } from "./box.ts";
 import { LanguageClient } from "./client.ts";
 import { Lock } from "./deps/async.ts";
 import { Denops } from "./deps/denops.ts";
-import { Settings } from "./interface.ts";
+import { Command, NotifyCallback, Settings } from "./interface.ts";
 import { ArrayOrObject } from "./jsonrpc/message.ts";
 
 const lock = new Lock(null);
 
 export class Lspoints {
+  commands: Record<string, Record<string, Command>> = {};
+  notifiers: Record<string, Array<NotifyCallback>> = {};
   clients: Record<string, LanguageClient> = {};
   settings: PatchableObjectBox<Settings> = new PatchableObjectBox({
     clientCapabilites: {},
@@ -23,10 +25,15 @@ export class Lspoints {
       await lock.lock(async () => {
         this.clients[name] = await new LanguageClient(denops, name, command)
           .initialize(options);
-        // TODO: adhoc approachなのでちゃんとしたIF作る
-        this.clients[name].rpcClient.subscribeNotify(async (msg) => {
+        // TODO: adhoc approachなので書き直す
+        this.clients[name].rpcClient.notifiers.push(async (msg) => {
           await denops.call("luaeval", "require('lspoints').notify(_A)", msg)
             .catch(console.log);
+        });
+        this.clients[name].rpcClient.notifiers.push(async (msg) => {
+          for (const notifier of this.notifiers[msg.method] ?? []) {
+            await notifier(name, msg.params);
+          }
         });
       });
     }
@@ -80,8 +87,28 @@ export class Lspoints {
   }
 
   async loadExtensions(path: string[]) {
+    // TODO: impl
     await lock.lock(async () => {
     });
+  }
+
+  subscribeNotify(
+    method: string,
+    callback: NotifyCallback,
+  ) {
+    (this.notifiers[method] = this.notifiers[method] ?? []).push(callback);
+  }
+
+  defineCommands(extensionName: string, commands: Record<string, Command>) {
+    this.commands[extensionName] = commands;
+  }
+
+  async executeCommand(
+    extensionName: string,
+    command: string,
+    ...args: unknown[]
+  ): Promise<unknown> {
+    return await this.commands[extensionName][command](...args);
   }
 }
 

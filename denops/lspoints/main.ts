@@ -1,3 +1,4 @@
+import { loadBuiltins } from "./builtins.ts";
 import { autocmd, Denops } from "./deps/denops.ts";
 import { u } from "./deps/unknownutil.ts";
 import { isArrayOrObject } from "./jsonrpc/message.ts";
@@ -39,8 +40,18 @@ export async function main(denops: Denops) {
       u.assert(path, u.isArrayOf(u.isString));
       await lspoints.loadExtensions(path);
     },
+    async executeCommand(
+      extensionName: unknown,
+      command: unknown,
+      ...args: unknown[]
+    ) {
+      u.assert(extensionName, u.isString);
+      u.assert(command, u.isString);
+      return await lspoints.executeCommand(extensionName, command, ...args);
+    },
   };
   await autocmd.group(denops, "lspoints.internal", (helper) => {
     helper.remove("*");
   });
+  await loadBuiltins(denops, lspoints);
 }

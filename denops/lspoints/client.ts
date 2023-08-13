@@ -41,13 +41,13 @@ export class LanguageClient {
   }
 
   async initialize(options: Record<string, unknown> = {}) {
-    this.rpcClient.subscribeTracer(await prettyTracer(this.name));
+    this.rpcClient.tracers.push(await prettyTracer(this.name));
     const response = await this.rpcClient.request(
       "initialize",
       {
         processId: Deno.pid,
         // TODO: 後で渡してやれるようにする
-        capabilities: {},
+        capabilities: options.capabilities ?? {},
         initializationOptions: options.initializationOptions,
         rootUri: null,
       } satisfies LSP.InitializeParams,

@@ -7,6 +7,14 @@ export type Settings = {
   clientCapabilites: LSP.ClientCapabilities;
 };
 
+export type NotifyCallback = (
+  clientName: string,
+  params: unknown,
+) => void | Promise<void>;
+
+export type CommandResult = unknown | Promise<unknown>;
+export type Command = (...args: unknown[]) => CommandResult;
+
 export interface Lspoints {
   readonly settings: PatchableObjectBox<Settings>;
 
@@ -15,8 +23,24 @@ export interface Lspoints {
     method: string,
     params: ArrayOrObject,
   ): Promise<unknown>;
+
+  subscribeNotify(
+    method: string,
+    callback: NotifyCallback,
+  ): void;
+
+  defineCommands(
+    extensionName: string,
+    commands: Record<string, Command>,
+  ): void;
+
+  executeCommand(
+    extensionName: string,
+    command: string,
+    ...args: unknown[]
+  ): CommandResult;
 }
 
-export abstract class Extension {
+export abstract class BaseExtension {
   abstract initialize(denops: Denops, lspoints: Lspoints): void | Promise<void>;
 }

@@ -29,8 +29,9 @@ export class JsonRpcClient {
   #requestId = 0;
   #requestPool: Record<number, [(r: unknown) => void, (e: unknown) => void]> =
     {};
-  #notifyHandlers: Array<(msg: NotifyMessage) => void | Promise<void>> = [];
-  #tracers: Array<Tracer> = [];
+
+  notifiers: Array<(msg: NotifyMessage) => void | Promise<void>> = [];
+  tracers: Array<Tracer> = [];
 
   constructor(command: string[]) {
     this.#process = new Deno.Command(command[0], {
@@ -44,8 +45,8 @@ export class JsonRpcClient {
       .pipeTo(
         new WritableStream({
           write: (chunk: unknown) => {
-            if (this.#tracers.length != 0) {
-              for (const t of this.#tracers) {
+            if (this.tracers.length != 0) {
+              for (const t of this.tracers) {
                 t.r(chunk);
               }
             }
@@ -76,8 +77,8 @@ export class JsonRpcClient {
                 delete this.#requestPool[id];
               }
             } else if (isNotifyMessage(chunk)) {
-              for (const handler of this.#notifyHandlers) {
-                handler(chunk);
+              for (const notifier of this.notifiers) {
+                notifier(chunk);
               }
             } else {
               console.log("unresolved chunk");
@@ -90,8 +91,8 @@ export class JsonRpcClient {
   }
 
   async #sendMessage(msg: unknown) {
-    if (this.#tracers.length != 0) {
-      for (const t of this.#tracers) {
+    if (this.tracers.length != 0) {
+      for (const t of this.tracers) {
         t.w(msg);
       }
     }
@@ -123,13 +124,5 @@ export class JsonRpcClient {
     return new Promise((resolve, reject) => {
       this.#requestPool[id] = [resolve, reject];
     });
-  }
-
-  subscribeNotify(handler: (msg: NotifyMessage) => void | Promise<void>) {
-    this.#notifyHandlers.push(handler);
-  }
-
-  subscribeTracer(tracer: Tracer) {
-    this.#tracers.push(tracer);
   }
 }
