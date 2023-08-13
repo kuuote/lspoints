@@ -6,8 +6,11 @@ function M.notify(msg)
   if msg and msg.method == 'textDocument/publishDiagnostics' then
     local path = msg.params.uri:gsub('file://', '')
     local bufnr = vim.fn.bufnr(path)
+    if bufnr == -1 then
+      return
+    end
 
-    vim.diagnostic.reset(ns, 0)
+    vim.diagnostic.reset(ns, bufnr)
     vim.diagnostic.set(
       ns,
       bufnr,
