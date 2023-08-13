@@ -1,6 +1,6 @@
 import { unknownutil as u } from "../deps.ts";
 
-type ArrayOrObject = Array<unknown> | Record<string, unknown>;
+export type ArrayOrObject = Array<unknown> | Record<string, unknown>;
 
 export const isArrayOrObject: u.Predicate<ArrayOrObject> = u.isOneOf([
   u.isArray,
