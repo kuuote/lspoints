@@ -1,6 +1,6 @@
-import { autocmd, Denops } from "../@lspoints/deps/denops.ts";
-import { LSP } from "../@lspoints/deps/lsp.ts";
-import { JsonRpcClient, Tracer } from "../@lspoints/jsonrpc_client.ts";
+import { autocmd, Denops } from "./deps/denops.ts";
+import { LSP } from "./deps/lsp.ts";
+import { JsonRpcClient, Tracer } from "./jsonrpc/jsonrpc_client.ts";
 
 async function prettyTracer(clientName: string): Promise<Tracer> {
   await Deno.mkdir("/tmp/lspoints").catch(() => {});

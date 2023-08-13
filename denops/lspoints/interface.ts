@@ -1,7 +1,7 @@
-import { PatchableObjectBox } from "../@lspoints/box.ts";
-import { Denops } from "../@lspoints/deps/denops.ts";
-import { LSP } from "../@lspoints/deps/lsp.ts";
-import { ArrayOrObject } from "../@lspoints/types/message.ts";
+import { PatchableObjectBox } from "./box.ts";
+import { Denops } from "./deps/denops.ts";
+import { LSP } from "./deps/lsp.ts";
+import { ArrayOrObject } from "./jsonrpc/message.ts";
 
 export type Settings = {
   clientCapabilites: LSP.ClientCapabilities;

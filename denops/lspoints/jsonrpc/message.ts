@@ -1,4 +1,4 @@
-import { unknownutil as u } from "../deps.ts";
+import { u } from "../deps/unknownutil.ts";
 
 export type ArrayOrObject = Array<unknown> | Record<string, unknown>;
 

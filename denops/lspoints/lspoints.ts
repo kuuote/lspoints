@@ -1,9 +1,9 @@
-import { PatchableObjectBox } from "../@lspoints/box.ts";
-import { Lock } from "../@lspoints/deps/async.ts";
-import { Denops } from "../@lspoints/deps/denops.ts";
-import { ArrayOrObject } from "../@lspoints/types/message.ts";
+import { PatchableObjectBox } from "./box.ts";
 import { LanguageClient } from "./client.ts";
+import { Lock } from "./deps/async.ts";
+import { Denops } from "./deps/denops.ts";
 import { Settings } from "./interface.ts";
+import { ArrayOrObject } from "./jsonrpc/message.ts";
 
 const lock = new Lock(null);
 

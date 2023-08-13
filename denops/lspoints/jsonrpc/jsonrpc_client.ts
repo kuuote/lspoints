@@ -5,7 +5,7 @@ import {
   isResponseMessage,
   NotifyMessage,
   RequestMessage,
-} from "./types/message.ts";
+} from "./message.ts";
 import { concat } from "https://deno.land/std@0.196.0/bytes/concat.ts";
 
 const encoder = new TextEncoder();

@@ -1,7 +1,6 @@
-import { unknownutil as u } from "../@lspoints/deps.ts";
-import { Denops } from "../@lspoints/deps/denops.ts";
-import { autocmd } from "../@lspoints/deps/denops.ts";
-import { isArrayOrObject } from "../@lspoints/types/message.ts";
+import { autocmd, Denops } from "./deps/denops.ts";
+import { u } from "./deps/unknownutil.ts";
+import { isArrayOrObject } from "./jsonrpc/message.ts";
 import { lspoints } from "./lspoints.ts";
 
 export async function main(denops: Denops) {
