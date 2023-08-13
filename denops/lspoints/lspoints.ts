@@ -37,7 +37,7 @@ export class Lspoints {
     });
   }
 
-  async notifyChange(bufNr: number) {
+  async notifyChange(bufNr: number, changedtick: number) {
     const clients = Object.values(this.clients)
       .filter((client) => client.isAttached(bufNr));
     if (clients.length === 0) {
@@ -48,9 +48,6 @@ export class Lspoints {
       (await denops.call("getbufline", bufNr, 1, "$") as string[]).join(
         "\n",
       ) + "\n";
-    const changedtick = Number(
-      await denops.call("getbufvar", bufNr, "changedtick"),
-    );
     for (const client of clients) {
       client.notifyChange(bufNr, text, changedtick);
     }

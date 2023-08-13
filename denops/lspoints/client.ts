@@ -92,7 +92,7 @@ export class LanguageClient {
         helper.define(
           ["TextChanged", "TextChangedI"],
           "<buffer>",
-          `call denops#notify('lspoints', 'notifyChange', [${bufNr}])`,
+          `call denops#notify('lspoints', 'notifyChange', [${bufNr}, getbufvar(${bufNr}, 'changedtick')])`,
         );
       },
     );
