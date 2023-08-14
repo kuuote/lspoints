@@ -8,13 +8,11 @@ export async function main(denops: Denops) {
   denops.dispatcher = {
     async start(
       name: unknown,
-      command: unknown,
       options: unknown = {},
     ) {
       u.assert(name, u.isString);
-      u.assert(command, u.isArrayOf(u.isString));
       u.assert(options, u.isRecord);
-      await lspoints.start(denops, name, command, options);
+      await lspoints.start(denops, name, options);
     },
     async attach(name: unknown, bufNr: unknown) {
       u.assert(name, u.isString);

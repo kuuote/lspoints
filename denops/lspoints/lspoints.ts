@@ -18,12 +18,13 @@ export class Lspoints {
   async start(
     denops: Denops,
     name: string,
-    command: string[],
     options: Record<string, unknown> = {},
   ) {
     if (this.clients[name] == null) {
       await lock.lock(async () => {
-        this.clients[name] = await new LanguageClient(denops, name, command)
+        // TODO: optionsに型を与えること
+        // TODO: TCP接続とか対応する
+        this.clients[name] = await new LanguageClient(denops, name, options.cmd as string[])
           .initialize(options);
         this.clients[name].rpcClient.notifiers.push(async (msg) => {
           for (const notifier of this.notifiers[msg.method] ?? []) {
