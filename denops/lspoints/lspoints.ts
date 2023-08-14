@@ -100,7 +100,7 @@ export class Lspoints {
             await denops.eval(
               `globpath(&runtimepath, 'denops/@lspoints/${p}.ts')`,
             ),
-          );
+          ).replace(/\n.*/, "");
         }
         // NOTE: Import module with fragment so that reload works properly.
         // https://github.com/vim-denops/denops.vim/issues/227
