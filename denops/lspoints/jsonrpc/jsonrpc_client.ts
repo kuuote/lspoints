@@ -78,7 +78,7 @@ export class JsonRpcClient {
               }
             } else if (isNotifyMessage(chunk)) {
               for (const notifier of this.notifiers) {
-                notifier(chunk);
+                notifier(chunk)?.catch(console.log);
               }
             } else {
               console.log("unresolved chunk");
