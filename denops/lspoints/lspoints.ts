@@ -2,7 +2,13 @@ import { PatchableObjectBox } from "./box.ts";
 import { LanguageClient } from "./client.ts";
 import { Lock } from "./deps/async.ts";
 import { Denops } from "./deps/denops.ts";
-import { Command, NotifyCallback, Settings } from "./interface.ts";
+import { stdpath } from "./deps/std.ts";
+import {
+  BaseExtension,
+  Command,
+  NotifyCallback,
+  Settings,
+} from "./interface.ts";
 import { ArrayOrObject } from "./jsonrpc/message.ts";
 
 const lock = new Lock(null);
@@ -24,7 +30,11 @@ export class Lspoints {
       await lock.lock(async () => {
         // TODO: optionsに型を与えること
         // TODO: TCP接続とか対応する
-        this.clients[name] = await new LanguageClient(denops, name, options.cmd as string[])
+        this.clients[name] = await new LanguageClient(
+          denops,
+          name,
+          options.cmd as string[],
+        )
           .initialize(options);
         this.clients[name].rpcClient.notifiers.push(async (msg) => {
           for (const notifier of this.notifiers[msg.method] ?? []) {
@@ -82,9 +92,23 @@ export class Lspoints {
     return await client.rpcClient.request(method, params);
   }
 
-  async loadExtensions(path: string[]) {
-    // TODO: impl
+  async loadExtensions(denops: Denops, path: string[]) {
     await lock.lock(async () => {
+      for (let p of path) {
+        if (p.indexOf("/") == -1) {
+          p = String(
+            await denops.eval(
+              `globpath(&runtimepath, 'denops/@lspoints/${p}.ts')`,
+            ),
+          );
+        }
+        // NOTE: Import module with fragment so that reload works properly.
+        // https://github.com/vim-denops/denops.vim/issues/227
+        const mod = await import(
+          `${stdpath.toFileUrl(p).href}#${performance.now()}`
+        );
+        await (new mod.Extension() as BaseExtension).initialize(denops, this);
+      }
     });
   }
 

@@ -34,9 +34,9 @@ export async function main(denops: Denops) {
       u.assert(params, u.isOptionalOf(isArrayOrObject));
       return await lspoints.request(name, method, params);
     },
-    async loadExtensions(path: unknown) {
-      u.assert(path, u.isArrayOf(u.isString));
-      await lspoints.loadExtensions(path);
+    async loadExtensions(ext: unknown) {
+      u.assert(ext, u.isArrayOf(u.isString));
+      await lspoints.loadExtensions(denops, ext);
     },
     async executeCommand(
       extensionName: unknown,
