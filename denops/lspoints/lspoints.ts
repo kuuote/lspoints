@@ -25,11 +25,6 @@ export class Lspoints {
       await lock.lock(async () => {
         this.clients[name] = await new LanguageClient(denops, name, command)
           .initialize(options);
-        // TODO: adhoc approachなので書き直す
-        this.clients[name].rpcClient.notifiers.push(async (msg) => {
-          await denops.call("luaeval", "require('lspoints').notify(_A)", msg)
-            .catch(console.log);
-        });
         this.clients[name].rpcClient.notifiers.push(async (msg) => {
           for (const notifier of this.notifiers[msg.method] ?? []) {
             await notifier(name, msg.params);
