@@ -1,6 +1,6 @@
-import { Denops } from "../deps/denops.ts";
-import { LSP } from "../deps/lsp.ts";
-import { BaseExtension, Lspoints } from "../interface.ts";
+import { Denops } from "../lspoints/deps/denops.ts";
+import { LSP } from "../lspoints/deps/lsp.ts";
+import { BaseExtension, Lspoints } from "../lspoints/interface.ts";
 
 export class Extension extends BaseExtension {
   diagnostics: Map<string, Map<number, Array<LSP.Diagnostic>>> = new Map();
