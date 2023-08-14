@@ -47,11 +47,19 @@ export class LanguageClient {
       {
         processId: Deno.pid,
         // TODO: 後で渡してやれるようにする
-        capabilities: options.capabilities ?? {},
+        capabilities: options.capabilities ?? {
+          "general": {
+            "positionEncodings": [
+              "utf-16",
+            ],
+          },
+          "textDocument": {},
+        },
         initializationOptions: options.initializationOptions,
         rootUri: null,
       } satisfies LSP.InitializeParams,
     ) as LSP.InitializeResult;
+    await this.rpcClient.notify("initialized", {});
     this.serverCapabilities = response.capabilities;
     return this;
   }
