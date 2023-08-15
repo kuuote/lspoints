@@ -35,7 +35,7 @@ export class Lspoints {
           name,
           options.cmd as string[],
         )
-          .initialize(options);
+          .initialize(options, this.settings.get());
         this.clients[name].rpcClient.notifiers.push(async (msg) => {
           for (const notifier of this.notifiers[msg.method] ?? []) {
             await notifier(name, msg.params);

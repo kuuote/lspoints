@@ -1,13 +1,14 @@
 import { autocmd, Denops } from "./deps/denops.ts";
 import { LSP } from "./deps/lsp.ts";
+import { Settings } from "./interface.ts";
 import { JsonRpcClient, Tracer } from "./jsonrpc/jsonrpc_client.ts";
 
-async function prettyTracer(clientName: string): Promise<Tracer> {
-  await Deno.mkdir("/tmp/lspoints").catch(() => {});
-  const path = "/tmp/lspoints/" + Date.now() + ".log";
+async function prettyTracer(clientName: string, dir: string): Promise<Tracer> {
+  await Deno.mkdir(dir).catch(() => {});
+  const path = dir.replace(/\/?$/, '/') + `${clientName}_${Date.now()}.log`
   async function write(type: string, msg: unknown) {
     const text = [
-      `☆ ${type} ${clientName}`,
+      `☆ ${type}`,
       JSON.stringify(msg, null, "\t"),
       "", // last newline
     ].join("\n");
@@ -40,8 +41,10 @@ export class LanguageClient {
     this.rpcClient = new JsonRpcClient(command);
   }
 
-  async initialize(options: Record<string, unknown> = {}) {
-    this.rpcClient.tracers.push(await prettyTracer(this.name));
+  async initialize(options: Record<string, unknown> = {}, settings: Settings) {
+    if (settings.tracePath != null) {
+      this.rpcClient.tracers.push(await prettyTracer(this.name, settings.tracePath));
+    }
     const response = await this.rpcClient.request(
       "initialize",
       {

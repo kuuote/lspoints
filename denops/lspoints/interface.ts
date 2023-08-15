@@ -4,6 +4,7 @@ import { LSP } from "./deps/lsp.ts";
 import { ArrayOrObject } from "./jsonrpc/message.ts";
 
 export type Settings = {
+  tracePath?: string;
   clientCapabilites: LSP.ClientCapabilities;
 };
 
