@@ -1,11 +1,21 @@
 import { loadBuiltins } from "./builtins.ts";
 import { autocmd, Denops } from "./deps/denops.ts";
 import { u } from "./deps/unknownutil.ts";
+import { Settings } from "./interface.ts";
 import { isArrayOrObject } from "./jsonrpc/message.ts";
 import { lspoints } from "./lspoints.ts";
 
 export async function main(denops: Denops) {
   denops.dispatcher = {
+    getSettings(settings: unknown) {
+      return lspoints.settings.set(settings as Settings);
+    },
+    setSettings(settings: unknown) {
+      lspoints.settings.set(settings as Settings);
+    },
+    patchSettings(settings: unknown) {
+      lspoints.settings.patch(settings as Settings);
+    },
     async start(
       name: unknown,
       options: unknown = {},
