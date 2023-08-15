@@ -18,7 +18,57 @@ export class Lspoints {
   notifiers: Record<string, Array<NotifyCallback>> = {};
   clients: Record<string, LanguageClient> = {};
   settings: PatchableObjectBox<Settings> = new PatchableObjectBox({
-    clientCapabilites: {},
+    clientCapabilites: {
+      textDocument: {
+        // https://github.com/hrsh7th/cmp-nvim-lsp/blob/44b16d11215dce86f253ce0c30949813c0a90765/lua/cmp_nvim_lsp/init.lua#L37
+        completion: {
+          dynamicRegistration: false,
+          completionItem: {
+            snippetSupport: true,
+            commitCharactersSupport: true,
+            deprecatedSupport: true,
+            preselectSupport: true,
+            tagSupport: {
+              valueSet: [
+                1, // Deprecated
+              ],
+            },
+            insertReplaceSupport: true,
+            resolveSupport: {
+              properties: [
+                "documentation",
+                "detail",
+                "additionalTextEdits",
+                "sortText",
+                "filterText",
+                "insertText",
+                "textEdit",
+                "insertTextFormat",
+                "insertTextMode",
+              ],
+            },
+            insertTextModeSupport: {
+              valueSet: [
+                1, // asIs
+                2, // adjustIndentation
+              ],
+            },
+            labelDetailsSupport: true,
+          },
+          contextSupport: true,
+          insertTextMode: 1,
+          completionList: {
+            itemDefaults: [
+              "commitCharacters",
+              "editRange",
+              "insertTextFormat",
+              "insertTextMode",
+              "data",
+            ],
+          },
+        },
+      },
+    },
   });
 
   async start(
