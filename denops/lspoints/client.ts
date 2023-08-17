@@ -5,7 +5,7 @@ import { JsonRpcClient, Tracer } from "./jsonrpc/jsonrpc_client.ts";
 
 async function prettyTracer(clientName: string, dir: string): Promise<Tracer> {
   await Deno.mkdir(dir).catch(() => {});
-  const path = dir.replace(/\/?$/, '/') + `${clientName}_${Date.now()}.log`
+  const path = dir.replace(/\/?$/, "/") + `${clientName}_${Date.now()}.log`;
   async function write(type: string, msg: unknown) {
     const text = [
       `☆ ${type}`,
@@ -43,7 +43,9 @@ export class LanguageClient {
 
   async initialize(options: Record<string, unknown> = {}, settings: Settings) {
     if (settings.tracePath != null) {
-      this.rpcClient.tracers.push(await prettyTracer(this.name, settings.tracePath));
+      this.rpcClient.tracers.push(
+        await prettyTracer(this.name, settings.tracePath),
+      );
     }
     const response = await this.rpcClient.request(
       "initialize",
