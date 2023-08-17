@@ -3,6 +3,11 @@ import { Denops } from "./deps/denops.ts";
 import { LSP } from "./deps/lsp.ts";
 import { ArrayOrObject } from "./jsonrpc/message.ts";
 
+export type Client = {
+  name: string;
+  serverCapabilities: LSP.ServerCapabilities;
+};
+
 export type Settings = {
   tracePath?: string;
   clientCapabilites: LSP.ClientCapabilities;
@@ -18,6 +23,8 @@ export type Command = (...args: unknown[]) => CommandResult;
 
 export interface Lspoints {
   readonly settings: PatchableObjectBox<Settings>;
+
+  getClients(bufNr: number): Client[];
 
   request(
     name: string,

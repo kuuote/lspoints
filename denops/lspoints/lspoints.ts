@@ -5,6 +5,7 @@ import { Denops } from "./deps/denops.ts";
 import { stdpath } from "./deps/std.ts";
 import {
   BaseExtension,
+  Client,
   Command,
   NotifyCallback,
   Settings,
@@ -121,7 +122,7 @@ export class Lspoints {
     }
   }
 
-  getClients(bufNr: number) {
+  getClients(bufNr: number): Client[] {
     return Object.entries(this.clients)
       .sort((a, b) => a[0].localeCompare(b[0]))
       .filter((entry) => entry[1].isAttached(bufNr))
