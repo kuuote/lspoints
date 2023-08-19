@@ -2,6 +2,15 @@ local nss = {}
 
 local M = {}
 
+vim.api.nvim_create_autocmd('User', {
+  pattern = 'DenopsPluginPost:lspoints',
+  callback = function()
+    for _, ns in pairs(nss) do
+      vim.diagnostic.reset(ns)
+    end
+  end,
+})
+
 function M.notify(msg)
   if nss[msg.client] == nil then
     nss[msg.client] = vim.api.nvim_create_namespace('lspoints.diagnostics.' .. msg.client)
