@@ -1,7 +1,7 @@
 import { PatchableObjectBox } from "./box.ts";
 import { LanguageClient } from "./client.ts";
 import { Lock } from "./deps/async.ts";
-import { Denops } from "./deps/denops.ts";
+import { autocmd, Denops } from "./deps/denops.ts";
 import { stdpath } from "./deps/std.ts";
 import {
   BaseExtension,
@@ -96,7 +96,7 @@ export class Lspoints {
     }
   }
 
-  async attach(name: string, bufNr: number) {
+  async attach(denops: Denops, name: string, bufNr: number) {
     await lock.lock(async () => {
       const client = this.clients[name];
       if (client == null) {
@@ -104,6 +104,19 @@ export class Lspoints {
       }
       await client.attach(bufNr);
     });
+    await autocmd.group(
+      denops,
+      "lspoints.internal",
+      (helper) => {
+        helper.remove("*", "<buffer>");
+        helper.define(
+          ["TextChanged", "TextChangedI"],
+          "<buffer>",
+          `call lspoints#internal#notify_change(${bufNr})`,
+        );
+      },
+    );
+    await autocmd.emit(denops, "User", `LspointsAttach:${name}`);
   }
 
   async notifyChange(

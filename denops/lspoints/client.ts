@@ -1,4 +1,4 @@
-import { autocmd, Denops } from "./deps/denops.ts";
+import { Denops } from "./deps/denops.ts";
 import { LSP } from "./deps/lsp.ts";
 import { Settings } from "./interface.ts";
 import { JsonRpcClient, Tracer } from "./jsonrpc/jsonrpc_client.ts";
@@ -70,42 +70,11 @@ export class LanguageClient {
   }
 
   async attach(bufNr: number) {
-    if (this.isAttached(bufNr)) {
-      return;
-    }
-    const uri = String(
-      await this.denops.call("lspoints#util#bufnr_to_uri", bufNr),
-    );
-    this.#attachedBuffers[bufNr] = uri;
-    const filetype = String(
-      await this.denops.call("getbufvar", bufNr, "&filetype"),
-    );
-
-    const text = await this.denops.call(
-      "lspoints#util#get_text",
+    const params = await this.denops.call(
+      "lspoints#internal#notify_change_params",
       bufNr,
-    ) as string;
-
-    await this.rpcClient.notify("textDocument/didOpen", {
-      textDocument: {
-        uri,
-        languageId: filetype,
-        version: 0,
-        text,
-      },
-    });
-    await autocmd.group(
-      this.denops,
-      "lspoints.internal",
-      (helper) => {
-        helper.remove("*", "<buffer>");
-        helper.define(
-          ["TextChanged", "TextChangedI"],
-          "<buffer>",
-          `call lspoints#internal#notifychange(${bufNr})`,
-        );
-      },
-    );
+    ) as [number, string, string, number];
+    await this.notifyChange(...params);
   }
 
   isAttached(bufNr: number): boolean {
@@ -119,16 +88,15 @@ export class LanguageClient {
     version: number,
   ) {
     const storedUri = this.#attachedBuffers[bufNr];
-    if (storedUri == null) {
-      throw Error(`not attached ${this.name} to ${bufNr}`);
-    }
-    // :saveasしたとかでuri違ったらLS側に開き直すようにお願いする
+    // :saveasしたとかattachしてないとかでuri違ったらLS側に開き直すようにお願いする
     if (uri !== storedUri) {
-      await this.rpcClient.notify("textDocument/didClose", {
-        textDocument: {
-          uri,
-        },
-      });
+      if (storedUri != null) {
+        await this.rpcClient.notify("textDocument/didClose", {
+          textDocument: {
+            uri,
+          },
+        });
+      }
       const filetype = String(
         await this.denops.call("getbufvar", bufNr, "&filetype"),
       );

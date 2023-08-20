@@ -27,7 +27,7 @@ export async function main(denops: Denops) {
     async attach(name: unknown, bufNr: unknown) {
       u.assert(name, u.isString);
       u.assert(bufNr, u.isNumber);
-      await lspoints.attach(name, bufNr);
+      await lspoints.attach(denops, name, bufNr);
     },
     async notifyChange(
       bufNr: unknown,
@@ -67,6 +67,7 @@ export async function main(denops: Denops) {
   };
   await autocmd.group(denops, "lspoints.internal", (helper) => {
     helper.remove("*");
+    helper.define("User", "LspointsAttach:*", ":");
   });
   await loadBuiltins(denops, lspoints);
 }
