@@ -69,5 +69,5 @@ export async function main(denops: Denops) {
     helper.remove("*");
     helper.define("User", "LspointsAttach:*", ":");
   });
-  await loadBuiltins(denops, lspoints);
+  loadBuiltins(denops, lspoints);
 }
