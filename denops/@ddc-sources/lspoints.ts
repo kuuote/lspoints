@@ -28,12 +28,9 @@ export class Source extends BaseSource<Never> {
     if (clients.length === 0) {
       return [];
     }
-    const bufname = String(
-      await denops.eval("fnamemodify(bufname(bufNr), ':p')", {
-        bufNr,
-      }),
+    const uri = String(
+      await denops.call("lspoints#util#bufnr_to_uri", bufNr),
     );
-    const uri = "file://" + bufname;
     const line = Number(await denops.call("line", "."));
     const col = Number(await denops.call("col", "."));
     const params = {

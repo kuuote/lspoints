@@ -29,10 +29,17 @@ export async function main(denops: Denops) {
       u.assert(bufNr, u.isNumber);
       await lspoints.attach(name, bufNr);
     },
-    async notifyChange(bufNr: unknown, changedtick: unknown) {
+    async notifyChange(
+      bufNr: unknown,
+      uri: unknown,
+      text: unknown,
+      changedtick: unknown,
+    ) {
       u.assert(bufNr, u.isNumber);
+      u.assert(uri, u.isString);
+      u.assert(text, u.isString);
       u.assert(changedtick, u.isNumber);
-      await lspoints.notifyChange(bufNr, changedtick);
+      await lspoints.notifyChange(bufNr, uri, text, changedtick);
     },
     getClients(bufNr: unknown) {
       u.assert(bufNr, u.isNumber);

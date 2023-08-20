@@ -106,19 +106,16 @@ export class Lspoints {
     });
   }
 
-  async notifyChange(bufNr: number, changedtick: number) {
+  async notifyChange(
+    bufNr: number,
+    uri: string,
+    text: string,
+    changedtick: number,
+  ) {
     const clients = Object.values(this.clients)
       .filter((client) => client.isAttached(bufNr));
-    if (clients.length === 0) {
-      return;
-    }
-    const denops = clients[0].denops;
-    const text =
-      (await denops.call("getbufline", bufNr, 1, "$") as string[]).join(
-        "\n",
-      ) + "\n";
     for (const client of clients) {
-      client.notifyChange(bufNr, text, changedtick);
+      client.notifyChange(bufNr, uri, text, changedtick);
     }
   }
 

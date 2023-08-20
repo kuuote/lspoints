@@ -73,21 +73,18 @@ export class LanguageClient {
     if (this.isAttached(bufNr)) {
       return;
     }
-    const bufname = String(
-      await this.denops.eval("fnamemodify(bufname(bufNr), ':p')", {
-        bufNr,
-      }),
+    const uri = String(
+      await this.denops.call("lspoints#util#bufnr_to_uri", bufNr),
     );
-    const uri = "file://" + bufname;
+    this.#attachedBuffers[bufNr] = uri;
     const filetype = String(
       await this.denops.call("getbufvar", bufNr, "&filetype"),
     );
-    this.#attachedBuffers[bufNr] = uri;
 
-    const text =
-      (await this.denops.call("getbufline", bufNr, 1, "$") as string[]).join(
-        "\n",
-      ) + "\n";
+    const text = await this.denops.call(
+      "lspoints#util#get_text",
+      bufNr,
+    ) as string;
 
     await this.rpcClient.notify("textDocument/didOpen", {
       textDocument: {
@@ -105,7 +102,7 @@ export class LanguageClient {
         helper.define(
           ["TextChanged", "TextChangedI"],
           "<buffer>",
-          `call denops#notify('lspoints', 'notifyChange', [${bufNr}, getbufvar(${bufNr}, 'changedtick')])`,
+          `call lspoints#internal#notifychange(${bufNr})`,
         );
       },
     );
@@ -115,11 +112,17 @@ export class LanguageClient {
     return this.#attachedBuffers[bufNr] != null;
   }
 
-  async notifyChange(bufNr: number, text: string, version: number) {
-    const uri = this.#attachedBuffers[bufNr];
-    if (uri == null) {
+  async notifyChange(
+    bufNr: number,
+    uri: string,
+    text: string,
+    version: number,
+  ) {
+    const oldUri = this.#attachedBuffers[bufNr];
+    if (oldUri == null) {
       throw Error(`not attached ${this.name} to ${bufNr}`);
     }
+    // TODO: uri違ったらattachし直す
     await this.rpcClient.notify("textDocument/didChange", {
       textDocument: {
         uri,
