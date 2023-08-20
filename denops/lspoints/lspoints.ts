@@ -115,7 +115,7 @@ export class Lspoints {
     const clients = Object.values(this.clients)
       .filter((client) => client.isAttached(bufNr));
     for (const client of clients) {
-      client.notifyChange(bufNr, uri, text, changedtick);
+      await client.notifyChange(bufNr, uri, text, changedtick);
     }
   }
 

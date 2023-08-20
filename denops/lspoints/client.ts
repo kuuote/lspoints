@@ -118,11 +118,31 @@ export class LanguageClient {
     text: string,
     version: number,
   ) {
-    const oldUri = this.#attachedBuffers[bufNr];
-    if (oldUri == null) {
+    const storedUri = this.#attachedBuffers[bufNr];
+    if (storedUri == null) {
       throw Error(`not attached ${this.name} to ${bufNr}`);
     }
-    // TODO: uri違ったらattachし直す
+    // :saveasしたとかでuri違ったらLS側に開き直すようにお願いする
+    if (uri !== storedUri) {
+      await this.rpcClient.notify("textDocument/didClose", {
+        textDocument: {
+          uri,
+        },
+      });
+      const filetype = String(
+        await this.denops.call("getbufvar", bufNr, "&filetype"),
+      );
+      await this.rpcClient.notify("textDocument/didOpen", {
+        textDocument: {
+          uri,
+          languageId: filetype,
+          version,
+          text,
+        },
+      });
+      this.#attachedBuffers[bufNr] = uri;
+      return;
+    }
     await this.rpcClient.notify("textDocument/didChange", {
       textDocument: {
         uri,
