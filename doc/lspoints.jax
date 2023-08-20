@@ -1,0 +1,79 @@
+*lspoints.txt*	denops.vimを使ってLSPをお喋りします。
+
+help書けてないのでぼちぼち書きます
+暫定的に使ってる設定の写しが `./lspoints_example.vim` にあります(|gf|で見れます)
+
+==============================================================================
+☆概要                                                   *lspoints-introduction*
+
+*lspoints* は Language Server と Vim のバッファを接続し、リクエストを送信した
+り、診断などの通知を受信したりするための機能を提供します。
+
+                                                           *lspoints-synopsis*
+>
+	" カレントバッファに `deno lsp` を attach する
+	function s:attach_denols() abort
+	  call lspoints#attach('denols', #{
+	  \   cmd: ['deno', 'lsp'],
+	  \   initializationOptions: #{
+	  \     enable: true,
+	  \     unstable: true,
+	  \     suggest: #{
+	  \       autoImports: false,
+	  \     },
+	  \   },
+	  \ })
+	endfunction
+	call s:attach_denols()
+
+	" ファイルを開いた時に attach する
+	autocmd FileType typescript,typescriptreact call s:attach_denols()
+
+	" 起動時に拡張を読み込む
+	autocmd User DenopsPluginPost:lspoints
+	\ call lspoints#load_extensions([
+	\   'nvim_diagnostics',
+	\ ])
+
+<
+==============================================================================
+API                                                             *lspoints-api*
+
+                                                           *lspoints#reload()*
+lspoints#reload()
+	denops.vimに命令を送り、lspointsの再起動を行います。
+	サーバーは全て終了し、アタッチも全て解除されます。
+	自動でサーバーが起動したりはしないため、何らかの方法で再起動する必要
+	があります。
+
+                                                           *lspoints#attach()*
+lspoints#attach({name}, [{options}])
+	カレントバッファに {name} で示される言語サーバーをアタッチします。
+	{options} は言語サーバーが立ち上がっていない時に起動するために
+	使用されます。立ち上がっている場合は無視されるため、省略も可能です。
+	以下の要素から成ります:
+
+	cmd:
+		サーバーを起動するためのコマンドライン。文字列のリスト。
+	initializationOptions:
+		サーバーに渡される初期化オプション
+
+                                                  *lspoints#load_extensions()*
+lspoints#load_extensions({pathes})
+	{pathes} に指定されたリストから拡張を読み込みます。
+	各要素は文字列のリストで、名前が指定された場合は |'runtimepath'| より
+	`denops/@lspoints/{path}.ts` にマッチする物が読み込まれます。
+	フルパスが指定されている場合はそのパスから読み込まれます。
+
+                                                      *lspoints#get_clients()*
+lspoints#get_clients([{bufnr}])
+	{bufnr} で示されるバッファにアタッチされているクライアントのリストを
+	取得します。
+	{bufnr} が省略された場合はカレントバッファが使用されます。
+
+                                                          *lspoints#request()*
+lspoints#request({name}, {method}, [{params}])
+	{name} で示される言語サーバーに {method} のリクエストを、省略可能な
+	{params} を引数にして送信し、結果を返します。
+
+ vim:tw=78:ts=8:noet:ft=help:norl:
