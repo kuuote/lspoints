@@ -3,7 +3,7 @@ local nss = {}
 local M = {}
 
 vim.api.nvim_create_autocmd('User', {
-  pattern = 'DenopsPluginPost:lspoints',
+  pattern = 'DenopsPluginPre:lspoints',
   callback = function()
     for _, ns in pairs(nss) do
       vim.diagnostic.reset(ns)
