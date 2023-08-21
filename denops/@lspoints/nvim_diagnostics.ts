@@ -21,7 +21,16 @@ export class Extension extends BaseExtension {
         await denops.call("luaeval", "require('lspoints').notify(_A)", {
           client,
           bufnr,
-          diagnostics: params.diagnostics,
+          diagnostics: params.diagnostics.map((d) => ({
+            lnum: d.range.start.line,
+            end_lnum: d.range["end"].line,
+            col: d.range.start.character,
+            end_col: d.range["end"].character,
+            severity: d.severity,
+            message: d.message,
+            source: d.source,
+            code: d.code,
+          })),
         });
       },
     );
