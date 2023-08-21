@@ -3,8 +3,6 @@ import { LSP } from "../lspoints/deps/lsp.ts";
 import { BaseExtension, Lspoints } from "../lspoints/interface.ts";
 
 export class Extension extends BaseExtension {
-  diagnostics: Map<string, Map<number, Array<LSP.Diagnostic>>> = new Map();
-
   initialize(denops: Denops, lspoints: Lspoints) {
     if (denops.meta.host !== "nvim") {
       return;
