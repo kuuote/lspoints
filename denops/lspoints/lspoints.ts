@@ -20,6 +20,11 @@ export class Lspoints {
   clients: Record<string, LanguageClient> = {};
   settings: PatchableObjectBox<Settings> = new PatchableObjectBox({
     clientCapabilites: {
+      general: {
+        positionEncodings: [
+          "utf-16",
+        ],
+      },
       textDocument: {
         // https://github.com/hrsh7th/cmp-nvim-lsp/blob/44b16d11215dce86f253ce0c30949813c0a90765/lua/cmp_nvim_lsp/init.lua#L37
         completion: {

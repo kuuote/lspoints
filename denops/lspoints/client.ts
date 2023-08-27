@@ -2,6 +2,7 @@ import { Denops } from "./deps/denops.ts";
 import { LSP } from "./deps/lsp.ts";
 import { Settings } from "./interface.ts";
 import { JsonRpcClient, Tracer } from "./jsonrpc/jsonrpc_client.ts";
+import { ClientOptions } from "./types.ts";
 
 async function prettyTracer(clientName: string, dir: string): Promise<Tracer> {
   await Deno.mkdir(dir).catch(() => {});
@@ -41,27 +42,29 @@ export class LanguageClient {
     this.rpcClient = new JsonRpcClient(command);
   }
 
-  async initialize(options: Record<string, unknown> = {}, settings: Settings) {
+  async initialize(options: ClientOptions = {}, settings: Settings) {
     if (settings.tracePath != null) {
       this.rpcClient.tracers.push(
         await prettyTracer(this.name, settings.tracePath),
       );
     }
+    let rootUri: string | null = null;
+    if (options.rootUri != null) {
+      rootUri = String(options.rootUri);
+    } else if (options.rootPath != null) {
+      rootUri = "file://" + String(options.rootPath);
+    }
     const response = await this.rpcClient.request(
       "initialize",
       {
-        processId: Deno.pid,
-        // TODO: 後で渡してやれるようにする
-        capabilities: options.capabilities ?? {
-          "general": {
-            "positionEncodings": [
-              "utf-16",
-            ],
-          },
-          "textDocument": {},
+        clientInfo: {
+          name: "lspoints",
+          version: "alpha2",
         },
-        initializationOptions: options.initializationOptions,
-        rootUri: null,
+        processId: Deno.pid,
+        capabilities: settings.clientCapabilites,
+        initializationOptions: options.initializationOptions ?? {},
+        rootUri,
       } satisfies LSP.InitializeParams,
     ) as LSP.InitializeResult;
     await this.rpcClient.notify("initialized", {});
