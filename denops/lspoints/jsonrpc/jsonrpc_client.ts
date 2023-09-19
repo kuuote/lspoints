@@ -72,7 +72,7 @@ export class JsonRpcClient {
                 if (chunk.result !== undefined) { // contains null
                   cb[0](chunk.result);
                 } else if (chunk.error != null) {
-                  cb[1](chunk.error);
+                  cb[1](JSON.stringify(chunk.error));
                 }
                 delete this.#requestPool[id];
               }
