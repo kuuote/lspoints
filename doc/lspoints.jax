@@ -16,10 +16,10 @@ help書けてないのでぼちぼち書きます
 	  call lspoints#attach('denols', #{
 	  \   cmd: ['deno', 'lsp'],
 	  \   initializationOptions: #{
-	  \     enable: true,
-	  \     unstable: true,
+	  \     enable: v:true,
+	  \     unstable: v:true,
 	  \     suggest: #{
-	  \       autoImports: false,
+	  \       autoImports: v:false,
 	  \     },
 	  \   },
 	  \ })
