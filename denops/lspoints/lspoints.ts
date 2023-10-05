@@ -144,6 +144,7 @@ export class Lspoints {
       .map((entry) => ({
         name: entry[0],
         serverCapabilities: entry[1].serverCapabilities,
+        getUriFromBufNr: entry[1].getUriFromBufNr.bind(entry[1]),
       }));
   }
 

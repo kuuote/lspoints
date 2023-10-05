@@ -80,6 +80,10 @@ export class LanguageClient {
     await this.notifyChange(...params);
   }
 
+  getUriFromBufNr(bufNr: number) {
+    return this.#attachedBuffers[bufNr] ?? "";
+  }
+
   isAttached(bufNr: number): boolean {
     return this.#attachedBuffers[bufNr] != null;
   }

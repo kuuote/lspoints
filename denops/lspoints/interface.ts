@@ -6,6 +6,7 @@ import { ArrayOrObject } from "./jsonrpc/message.ts";
 export type Client = {
   name: string;
   serverCapabilities: LSP.ServerCapabilities;
+  getUriFromBufNr(bufnr: number): string;
 };
 
 export type Settings = {
