@@ -5,6 +5,11 @@ import { Settings } from "./interface.ts";
 import { isArrayOrObject } from "./jsonrpc/message.ts";
 import { lspoints } from "./lspoints.ts";
 
+const isNumberOrString = u.isOneOf([
+  u.isNumber,
+  u.isString,
+]);
+
 export async function main(denops: Denops) {
   denops.dispatcher = {
     getSettings(settings: unknown) {
@@ -24,10 +29,10 @@ export async function main(denops: Denops) {
       u.assert(options, u.isRecord);
       await lspoints.start(denops, name, options);
     },
-    async attach(name: unknown, bufNr: unknown) {
-      u.assert(name, u.isString);
+    async attach(id: unknown, bufNr: unknown) {
+      u.assert(id, isNumberOrString);
       u.assert(bufNr, u.isNumber);
-      await lspoints.attach(denops, name, bufNr);
+      await lspoints.attach(denops, id, bufNr);
     },
     async notifyChange(
       bufNr: unknown,
@@ -45,11 +50,11 @@ export async function main(denops: Denops) {
       u.assert(bufNr, u.isNumber);
       return lspoints.getClients(bufNr);
     },
-    async request(name: unknown, method: unknown, params: unknown = {}) {
-      u.assert(name, u.isString);
+    async request(id: unknown, method: unknown, params: unknown = {}) {
+      u.assert(id, isNumberOrString);
       u.assert(method, u.isString);
       u.assert(params, u.isOptionalOf(isArrayOrObject));
-      return await lspoints.request(name, method, params);
+      return await lspoints.request(id, method, params);
     },
     async loadExtensions(ext: unknown) {
       u.assert(ext, u.isArrayOf(u.isString));
