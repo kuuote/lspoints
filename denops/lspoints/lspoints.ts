@@ -82,7 +82,7 @@ export class Lspoints {
     if (typeof id === "number") {
       return this.clientIDs[id];
     } else {
-      this.clients[id];
+      return this.clients[id];
     }
   }
 
