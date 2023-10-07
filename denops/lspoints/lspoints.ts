@@ -113,11 +113,13 @@ export class Lspoints {
   }
 
   async attach(denops: Denops, id: string | number, bufNr: number) {
-    const client = this.#getClient(id);
-    if (client == null) {
-      throw Error(`client "${id}" is not started`);
-    }
+    let name: string;
     await lock.lock(async () => {
+      const client = this.#getClient(id);
+      if (client == null) {
+        throw Error(`client "${id}" is not started`);
+      }
+      name = client.name;
       await client.attach(bufNr);
     });
     await autocmd.group(
@@ -132,7 +134,7 @@ export class Lspoints {
         );
       },
     );
-    await autocmd.emit(denops, "User", `LspointsAttach:${client.name}`);
+    await autocmd.emit(denops, "User", `LspointsAttach:${name}`);
   }
 
   async notifyChange(
