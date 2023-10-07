@@ -2,7 +2,12 @@ import { Denops } from "./deps/denops.ts";
 import { LSP } from "./deps/lsp.ts";
 import { Settings } from "./interface.ts";
 import { JsonRpcClient, Tracer } from "./jsonrpc/jsonrpc_client.ts";
-import { ClientOptions } from "./types.ts";
+
+export type ClientOptions = {
+  rootPath?: string;
+  rootUri?: string;
+  initializationOptions?: Record<string, unknown>;
+};
 
 async function prettyTracer(clientName: string, dir: string): Promise<Tracer> {
   await Deno.mkdir(dir).catch(() => {});
