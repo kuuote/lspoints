@@ -27,8 +27,11 @@ async function prettyTracer(clientName: string, dir: string): Promise<Tracer> {
   };
 }
 
+let clientID = 0;
+
 export class LanguageClient {
   name: string;
+  id = clientID++;
   denops: Denops;
   rpcClient: JsonRpcClient;
 

@@ -5,6 +5,7 @@ import { ArrayOrObject } from "./jsonrpc/message.ts";
 
 export type Client = {
   name: string;
+  id: number;
   serverCapabilities: LSP.ServerCapabilities;
   getUriFromBufNr(bufnr: number): string;
 };

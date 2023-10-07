@@ -18,6 +18,7 @@ export class Lspoints {
   commands: Record<string, Record<string, Command>> = {};
   notifiers: Record<string, Array<NotifyCallback>> = {};
   clients: Record<string, LanguageClient> = {};
+  clientIDs: Record<number, LanguageClient> = {};
   settings: PatchableObjectBox<Settings> = new PatchableObjectBox({
     clientCapabilites: {
       general: {
@@ -77,6 +78,14 @@ export class Lspoints {
     },
   });
 
+  #getClient(id: number | string): LanguageClient | undefined {
+    if (typeof id === "number") {
+      return this.clientIDs[id];
+    } else {
+      this.clients[id];
+    }
+  }
+
   async start(
     denops: Denops,
     name: string,
@@ -86,12 +95,14 @@ export class Lspoints {
       await lock.lock(async () => {
         // TODO: optionsに型を与えること
         // TODO: TCP接続とか対応する
-        this.clients[name] = await new LanguageClient(
+        const client = await new LanguageClient(
           denops,
           name,
           options.cmd as string[],
         )
           .initialize(options, this.settings.get());
+        this.clients[name] = client;
+        this.clientIDs[client.id] = client;
         this.clients[name].rpcClient.notifiers.push(async (msg) => {
           for (const notifier of this.notifiers[msg.method] ?? []) {
             await notifier(name, msg.params);
@@ -101,12 +112,12 @@ export class Lspoints {
     }
   }
 
-  async attach(denops: Denops, name: string, bufNr: number) {
+  async attach(denops: Denops, id: string | number, bufNr: number) {
+    const client = this.#getClient(id);
+    if (client == null) {
+      throw Error(`client "${id}" is not started`);
+    }
     await lock.lock(async () => {
-      const client = this.clients[name];
-      if (client == null) {
-        throw Error(`client "${name}" is not started`);
-      }
       await client.attach(bufNr);
     });
     await autocmd.group(
@@ -121,7 +132,7 @@ export class Lspoints {
         );
       },
     );
-    await autocmd.emit(denops, "User", `LspointsAttach:${name}`);
+    await autocmd.emit(denops, "User", `LspointsAttach:${client.name}`);
   }
 
   async notifyChange(
@@ -143,18 +154,23 @@ export class Lspoints {
       .filter((entry) => entry[1].isAttached(bufNr))
       .map((entry) => ({
         name: entry[0],
+        id: entry[1].id,
         serverCapabilities: entry[1].serverCapabilities,
         getUriFromBufNr: entry[1].getUriFromBufNr.bind(entry[1]),
       }));
   }
 
-  async request(name: string, method: string, params: ArrayOrObject = {}) {
+  async request(
+    id: string | number,
+    method: string,
+    params: ArrayOrObject = {},
+  ) {
     if (lock.locked) {
       await lock.lock(() => {});
     }
-    const client = this.clients[name];
+    const client = this.#getClient(id);
     if (client == null) {
-      throw Error(`client "${name}" is not started`);
+      throw Error(`client "${id}" is not started`);
     }
     return await client.rpcClient.request(method, params);
   }
