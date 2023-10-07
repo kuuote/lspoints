@@ -113,7 +113,7 @@ export class Lspoints {
   }
 
   async attach(denops: Denops, id: string | number, bufNr: number) {
-    let name: string;
+    let name = "";
     await lock.lock(async () => {
       const client = this.#getClient(id);
       if (client == null) {
