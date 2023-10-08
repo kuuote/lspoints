@@ -6,7 +6,7 @@ import {
   NotifyMessage,
   RequestMessage,
 } from "./message.ts";
-import { concat } from "https://deno.land/std@0.196.0/bytes/concat.ts";
+import { concat } from "https://deno.land/std@0.203.0/bytes/concat.ts";
 
 const encoder = new TextEncoder();
 
