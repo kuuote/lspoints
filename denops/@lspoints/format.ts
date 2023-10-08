@@ -1,3 +1,4 @@
+import { deadline } from "https://deno.land/std@0.203.0/async/mod.ts";
 import { Denops } from "../lspoints/deps/denops.ts";
 import { LSP } from "../lspoints/deps/lsp.ts";
 import { u } from "../lspoints/deps/unknownutil.ts";
@@ -9,7 +10,8 @@ import {
 export class Extension extends BaseExtension {
   initialize(denops: Denops, lspoints: Lspoints) {
     lspoints.defineCommands("format", {
-      execute: async (bufnr: unknown, selector?: unknown) => {
+      execute: async (bufnr: unknown, timeout = 5000, selector?: unknown) => {
+        u.assert(timeout, u.isNumber);
         let clients = lspoints.getClients(Number(bufnr)).filter((c) =>
           c.serverCapabilities.documentFormattingProvider != null
         );
@@ -23,7 +25,7 @@ export class Extension extends BaseExtension {
 
         const path = String(await denops.call("expand", "%:p"));
 
-        const result = await lspoints.request(
+        const resultPromise = lspoints.request(
           clients[0].name,
           "textDocument/formatting",
           {
@@ -35,7 +37,15 @@ export class Extension extends BaseExtension {
               insertSpaces: Boolean(await denops.eval("&l:expandtab")),
             },
           },
-        ) as LSP.TextEdit[] | null;
+        ) as Promise<LSP.TextEdit[] | null>;
+        const result = await deadline(resultPromise, timeout)
+          .catch(async () => {
+            await denops.cmd(`
+                             echohl Error
+                             echomsg "Timeout!"
+                             echohl None
+                             `);
+          });
         if (result == null) {
           return;
         }
