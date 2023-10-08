@@ -84,8 +84,10 @@ export class LanguageClient {
     const params = await this.denops.call(
       "lspoints#internal#notify_change_params",
       bufNr,
-    ) as [number, string, string, number];
-    await this.notifyChange(...params);
+    ) as [number, string, string, number] | 0;
+    if (params !== 0) {
+      await this.notifyChange(...params);
+    }
   }
 
   getUriFromBufNr(bufNr: number) {
