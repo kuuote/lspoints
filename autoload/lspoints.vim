@@ -1,7 +1,5 @@
 function lspoints#_notify(method, params)
-  let method = a:method
-  let params = a:params
-  call denops#plugin#wait_async('lspoints', {->denops#notify('lspoints', method, params)})
+  call denops#plugin#wait_async('lspoints', {->denops#notify('lspoints', a:method, a:params)})
 endfunction
 
 function lspoints#reload()
@@ -16,9 +14,7 @@ endfunction
 
 function lspoints#attach(name, options = {})
   let bufnr = bufnr()
-  let name = a:name
-  let options = a:options
-  call denops#plugin#wait_async('lspoints', {->s:notify_attach(name, options, bufnr)})
+  call denops#plugin#wait_async('lspoints', {->s:notify_attach(a:name, a:options, bufnr)})
 endfunction
 
 function lspoints#load_extensions(pathes)
