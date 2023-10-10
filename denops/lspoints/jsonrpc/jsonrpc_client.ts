@@ -99,7 +99,10 @@ export class JsonRpcClient {
     await this.#w.write(jsonRpcEncode(msg));
   }
 
-  async notify(method: string, params?: unknown[] | Record<string, unknown>) {
+  async notify(
+    method: string,
+    params?: unknown[] | Record<string, unknown>,
+  ): Promise<void> {
     const msg: NotifyMessage = {
       jsonrpc: "2.0",
       method,
@@ -110,7 +113,10 @@ export class JsonRpcClient {
     await this.#sendMessage(msg);
   }
 
-  async request(method: string, params?: unknown[] | Record<string, unknown>) {
+  async request(
+    method: string,
+    params?: unknown[] | Record<string, unknown>,
+  ): Promise<unknown> {
     const id = this.#requestId++;
     const msg: RequestMessage = {
       jsonrpc: "2.0",

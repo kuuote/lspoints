@@ -18,7 +18,7 @@ function lspoints#get_clients(bufnr = bufnr())
 endfunction
 
 function lspoints#notify(name, method, params = {})
-  call lspoints#denops#notify('notify', [a:method, a:params])
+  call lspoints#denops#notify('notify', [a:name, a:method, a:params])
 endfunction
 
 function lspoints#request(name, method, params = {})

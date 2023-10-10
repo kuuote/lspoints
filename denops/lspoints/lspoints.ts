@@ -162,11 +162,26 @@ export class Lspoints {
       }));
   }
 
+  async notify(
+    id: string | number,
+    method: string,
+    params: ArrayOrObject = {},
+  ): Promise<void> {
+    if (lock.locked) {
+      await lock.lock(() => {});
+    }
+    const client = this.#getClient(id);
+    if (client == null) {
+      throw Error(`client "${id}" is not started`);
+    }
+    await client.rpcClient.notify(method, params);
+  }
+
   async request(
     id: string | number,
     method: string,
     params: ArrayOrObject = {},
-  ) {
+  ): Promise<unknown> {
     if (lock.locked) {
       await lock.lock(() => {});
     }

@@ -50,7 +50,13 @@ export async function main(denops: Denops) {
       u.assert(bufNr, u.isNumber);
       return lspoints.getClients(bufNr);
     },
-    async request(id: unknown, method: unknown, params: unknown = {}) {
+    async notify(id: unknown, method: unknown, params: unknown = {}): Promise<void> {
+      u.assert(id, isNumberOrString);
+      u.assert(method, u.isString);
+      u.assert(params, u.isOptionalOf(isArrayOrObject));
+      await lspoints.notify(id, method, params);
+    },
+    async request(id: unknown, method: unknown, params: unknown = {}): Promise<unknown> {
       u.assert(id, isNumberOrString);
       u.assert(method, u.isString);
       u.assert(params, u.isOptionalOf(isArrayOrObject));
