@@ -71,6 +71,11 @@ lspoints#get_clients([{bufnr}])
 	取得します。
 	{bufnr} が省略された場合はカレントバッファが使用されます。
 
+                                                           *lspoints#notify()*
+lspoints#notify({name}, {method}, [{params}])
+	{name} で示される言語サーバーに {method} の通知を、省略可能な
+	{params} を引数にして送信します。
+
                                                           *lspoints#request()*
 lspoints#request({name}, {method}, [{params}])
 	{name} で示される言語サーバーに {method} のリクエストを、省略可能な
