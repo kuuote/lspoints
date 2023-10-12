@@ -12,8 +12,8 @@ const isNumberOrString = u.isOneOf([
 
 export async function main(denops: Denops) {
   denops.dispatcher = {
-    getSettings(settings: unknown) {
-      return lspoints.settings.set(settings as Settings);
+    getSettings() {
+      return lspoints.settings.get();
     },
     setSettings(settings: unknown) {
       lspoints.settings.set(settings as Settings);
