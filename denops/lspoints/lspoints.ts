@@ -98,7 +98,9 @@ export class Lspoints {
       await lock.lock(async () => {
         const defaultOptions = this.settings.get().startOptions[name];
         if (defaultOptions != null) {
-          options = deepMerge(defaultOptions, options);
+          options = deepMerge(defaultOptions, options, {
+            arrays: "replace",
+          });
         }
         // TODO: TCP接続とか対応する
         const client = await new LanguageClient(
