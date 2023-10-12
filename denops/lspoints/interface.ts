@@ -11,21 +11,15 @@ export type Client = {
   getUriFromBufNr(bufnr: number): string;
 };
 
-export type StartOptions = {
-  cmd?: string[];
-  initializationOptions?: Record<string, unknown>;
-  params?: Record<string, unknown>;
-  rootPath?: string;
-  rootUri?: string;
-};
-
-export const isStartOptions: u.Predicate<StartOptions> = u.isObjectOf({
+export const isStartOptions = u.isObjectOf({
   cmd: u.isOptionalOf(u.isArrayOf(u.isString)),
   initializationOptions: u.isOptionalOf(u.isRecord),
   params: u.isOptionalOf(u.isRecord),
   rootPath: u.isOptionalOf(u.isString),
   rootUri: u.isOptionalOf(u.isString),
 });
+
+export type StartOptions = u.PredicateType<typeof isStartOptions>;
 
 export type Settings = {
   startOptions: Record<string, StartOptions>;
