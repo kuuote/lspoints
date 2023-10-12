@@ -1,6 +1,7 @@
 import { PatchableObjectBox } from "./box.ts";
 import { Denops } from "./deps/denops.ts";
 import { LSP } from "./deps/lsp.ts";
+import { u } from "./deps/unknownutil.ts";
 import { ArrayOrObject } from "./jsonrpc/message.ts";
 
 export type Client = {
@@ -10,9 +11,26 @@ export type Client = {
   getUriFromBufNr(bufnr: number): string;
 };
 
+export type StartOptions = {
+  cmd?: string[];
+  initializationOptions?: Record<string, unknown>;
+  params?: Record<string, unknown>;
+  rootPath?: string;
+  rootUri?: string;
+};
+
+export const isStartOptions: u.Predicate<StartOptions> = u.isObjectOf({
+  cmd: u.isOptionalOf(u.isArrayOf(u.isString)),
+  initializationOptions: u.isOptionalOf(u.isRecord),
+  params: u.isOptionalOf(u.isRecord),
+  rootPath: u.isOptionalOf(u.isString),
+  rootUri: u.isOptionalOf(u.isString),
+});
+
 export type Settings = {
-  tracePath?: string;
+  startOptions: Record<string, StartOptions>;
   clientCapabilites: LSP.ClientCapabilities;
+  tracePath?: string;
 };
 
 export type NotifyCallback = (

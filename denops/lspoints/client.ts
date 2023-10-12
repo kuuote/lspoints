@@ -1,6 +1,6 @@
 import { Denops } from "./deps/denops.ts";
 import { LSP } from "./deps/lsp.ts";
-import { Settings } from "./interface.ts";
+import { Settings, StartOptions } from "./interface.ts";
 import { JsonRpcClient, Tracer } from "./jsonrpc/jsonrpc_client.ts";
 
 export type ClientOptions = {
@@ -35,43 +35,49 @@ async function prettyTracer(clientName: string, dir: string): Promise<Tracer> {
 let clientID = 0;
 
 export class LanguageClient {
-  name: string;
-  id = clientID++;
   denops: Denops;
+  name: string;
+  options: StartOptions;
+
+  id = clientID++;
   rpcClient: JsonRpcClient;
+  #attachedBuffers: Record<number, string> = {};
 
   serverCapabilities: LSP.ServerCapabilities = {};
 
-  #attachedBuffers: Record<number, string> = {};
-
-  constructor(denops: Denops, name: string, command: string[]) {
+  constructor(denops: Denops, name: string, startOptions: StartOptions) {
     this.denops = denops;
     this.name = name;
-    this.rpcClient = new JsonRpcClient(command);
+    this.options = startOptions;
+
+    if (startOptions.cmd == null) {
+      throw "cmd not specify";
+    }
+    this.rpcClient = new JsonRpcClient(startOptions.cmd);
   }
 
-  async initialize(options: ClientOptions = {}, settings: Settings) {
+  async initialize(settings: Settings) {
     if (settings.tracePath != null) {
       this.rpcClient.tracers.push(
         await prettyTracer(this.name, settings.tracePath),
       );
     }
     let rootUri: string | null = null;
-    if (options.rootUri != null) {
-      rootUri = String(options.rootUri);
-    } else if (options.rootPath != null) {
-      rootUri = "file://" + String(options.rootPath);
+    if (this.options.rootUri != null) {
+      rootUri = String(this.options.rootUri);
+    } else if (this.options.rootPath != null) {
+      rootUri = "file://" + String(this.options.rootPath);
     }
     const response = await this.rpcClient.request(
       "initialize",
       {
         clientInfo: {
           name: "lspoints",
-          version: "alpha2",
+          version: "v0.0.2",
         },
         processId: Deno.pid,
         capabilities: settings.clientCapabilites,
-        initializationOptions: options.initializationOptions ?? {},
+        initializationOptions: this.options.initializationOptions ?? {},
         rootUri,
       } satisfies LSP.InitializeParams,
     ) as LSP.InitializeResult;

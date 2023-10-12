@@ -1,4 +1,5 @@
 import { PatchableObjectBox } from "./box.ts";
+import { deepMerge } from "./deps/std.ts";
 import { LanguageClient } from "./client.ts";
 import { Lock } from "./deps/async.ts";
 import { autocmd, Denops } from "./deps/denops.ts";
@@ -9,6 +10,7 @@ import {
   Command,
   NotifyCallback,
   Settings,
+  StartOptions,
 } from "./interface.ts";
 import { ArrayOrObject } from "./jsonrpc/message.ts";
 
@@ -76,6 +78,7 @@ export class Lspoints {
         },
       },
     },
+    startOptions: {},
   });
 
   #getClient(id: number | string): LanguageClient | undefined {
@@ -89,18 +92,21 @@ export class Lspoints {
   async start(
     denops: Denops,
     name: string,
-    options: Record<string, unknown> = {},
+    options: StartOptions = {},
   ) {
     if (this.clients[name] == null) {
       await lock.lock(async () => {
-        // TODO: optionsに型を与えること
+        const defaultOptions = this.settings.get().startOptions[name];
+        if (defaultOptions != null) {
+          options = deepMerge(defaultOptions, options);
+        }
         // TODO: TCP接続とか対応する
         const client = await new LanguageClient(
           denops,
           name,
-          options.cmd as string[],
+          options,
         )
-          .initialize(options, this.settings.get());
+          .initialize(this.settings.get());
         this.clients[name] = client;
         this.clientIDs[client.id] = client;
         this.clients[name].rpcClient.notifiers.push(async (msg) => {

@@ -1,7 +1,4 @@
-import {
-  deepMerge,
-  DeepMergeOptions,
-} from "https://deno.land/std@0.203.0/collections/deep_merge.ts";
+import { deepMerge, DeepMergeOptions } from "./deps/std.ts";
 
 export class PatchableObjectBox<T extends Record<PropertyKey, unknown>> {
   #store: T;

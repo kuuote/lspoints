@@ -1,7 +1,7 @@
 import { loadBuiltins } from "./builtins.ts";
 import { autocmd, Denops } from "./deps/denops.ts";
 import { u } from "./deps/unknownutil.ts";
-import { Settings } from "./interface.ts";
+import { isStartOptions, Settings } from "./interface.ts";
 import { isArrayOrObject } from "./jsonrpc/message.ts";
 import { lspoints } from "./lspoints.ts";
 
@@ -23,11 +23,11 @@ export async function main(denops: Denops) {
     },
     async start(
       name: unknown,
-      options: unknown = {},
+      startOptions: unknown = {},
     ) {
       u.assert(name, u.isString);
-      u.assert(options, u.isRecord);
-      await lspoints.start(denops, name, options);
+      u.assert(startOptions, isStartOptions);
+      await lspoints.start(denops, name, startOptions);
     },
     async attach(id: unknown, bufNr: unknown) {
       u.assert(id, isNumberOrString);
@@ -50,13 +50,21 @@ export async function main(denops: Denops) {
       u.assert(bufNr, u.isNumber);
       return lspoints.getClients(bufNr);
     },
-    async notify(id: unknown, method: unknown, params: unknown = {}): Promise<void> {
+    async notify(
+      id: unknown,
+      method: unknown,
+      params: unknown = {},
+    ): Promise<void> {
       u.assert(id, isNumberOrString);
       u.assert(method, u.isString);
       u.assert(params, u.isOptionalOf(isArrayOrObject));
       await lspoints.notify(id, method, params);
     },
-    async request(id: unknown, method: unknown, params: unknown = {}): Promise<unknown> {
+    async request(
+      id: unknown,
+      method: unknown,
+      params: unknown = {},
+    ): Promise<unknown> {
       u.assert(id, isNumberOrString);
       u.assert(method, u.isString);
       u.assert(params, u.isOptionalOf(isArrayOrObject));
