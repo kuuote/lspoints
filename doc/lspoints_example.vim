@@ -1,5 +1,7 @@
 function s:post() abort
+  " see also ./config.ts
 	call lspoints#load_extensions([
+	\   'config',
 	\   'format',
 	\   'nvim_diagnostics',
 	\ ])
@@ -11,6 +13,7 @@ endfunction
 autocmd User DenopsPluginPost:lspoints call s:post()
 
 function s:attach_denols() abort
+  " Vim script way to given options
   call lspoints#attach('denols', #{
   \   cmd: ['deno', 'lsp'],
   \   initializationOptions: #{
