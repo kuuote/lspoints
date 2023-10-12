@@ -8,6 +8,8 @@ import {
 } from "./message.ts";
 import { concat } from "https://deno.land/std@0.203.0/bytes/concat.ts";
 
+type Promisify<T> = T | Promise<T>;
+
 const encoder = new TextEncoder();
 
 function jsonRpcEncode(data: unknown): Uint8Array {
@@ -30,7 +32,10 @@ export class JsonRpcClient {
   #requestPool: Record<number, [(r: unknown) => void, (e: unknown) => void]> =
     {};
 
-  notifiers: Array<(msg: NotifyMessage) => void | Promise<void>> = [];
+  notifyHandlers: Array<(msg: NotifyMessage) => Promisify<void>> = [];
+  requestHandlers: Array<
+    (msg: RequestMessage) => Promisify<unknown | undefined>
+  > = [];
   tracers: Array<Tracer> = [];
 
   constructor(command: string[]) {
@@ -51,17 +56,22 @@ export class JsonRpcClient {
               }
             }
             if (isRequestMessage(chunk)) {
-              if (chunk.method === "workspace/configuration") {
-                // TODO: 後で分離
-                this.#sendMessage({
-                  jsonrpc: "2.0",
-                  id: chunk.id,
-                  result: null,
-                });
-                return;
-              }
-              console.log("request");
-              console.log(chunk);
+              (async () => {
+                for (const handler of this.requestHandlers) {
+                  const result = await handler(chunk);
+                  if (result !== undefined) {
+                    this.#sendMessage({
+                      jsonrpc: "2.0",
+                      id: chunk.id,
+                      result,
+                    });
+                    return;
+                  }
+                }
+                // TODO: ログの出し方を変える
+                console.log("unresolved request: " + chunk.id);
+                console.log(chunk);
+              })().catch(console.trace);
             } else if (isResponseMessage(chunk)) {
               const id = Number(chunk.id);
               const cb = this.#requestPool[id];
@@ -77,7 +87,7 @@ export class JsonRpcClient {
                 delete this.#requestPool[id];
               }
             } else if (isNotifyMessage(chunk)) {
-              for (const notifier of this.notifiers) {
+              for (const notifier of this.notifyHandlers) {
                 notifier(chunk)?.catch(console.log);
               }
             } else {

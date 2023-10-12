@@ -4,12 +4,7 @@ import { LSP } from "./deps/lsp.ts";
 import { u } from "./deps/unknownutil.ts";
 import { ArrayOrObject } from "./jsonrpc/message.ts";
 
-export type Client = {
-  name: string;
-  id: number;
-  serverCapabilities: LSP.ServerCapabilities;
-  getUriFromBufNr(bufnr: number): string;
-};
+type Promisify<T> = T | Promise<T>;
 
 export const isStartOptions = u.isObjectOf({
   cmd: u.isOptionalOf(u.isArrayOf(u.isString)),
@@ -21,16 +16,31 @@ export const isStartOptions = u.isObjectOf({
 
 export type StartOptions = u.PredicateType<typeof isStartOptions>;
 
+export type Client = {
+  name: string;
+  id: number;
+  serverCapabilities: LSP.ServerCapabilities;
+  getUriFromBufNr(bufnr: number): string;
+  options: StartOptions;
+};
+
 export type Settings = {
   startOptions: Record<string, StartOptions>;
   clientCapabilites: LSP.ClientCapabilities;
   tracePath?: string;
 };
 
+export type AttachCallback = (clientName: string) => Promisify<void>;
+
 export type NotifyCallback = (
   clientName: string,
   params: unknown,
-) => void | Promise<void>;
+) => Promisify<void>;
+
+export type RequestCallback = (
+  clientName: string,
+  params: unknown,
+) => Promisify<unknown>;
 
 export type CommandResult = unknown | Promise<unknown>;
 export type Command = (...args: unknown[]) => CommandResult;
@@ -38,7 +48,15 @@ export type Command = (...args: unknown[]) => CommandResult;
 export interface Lspoints {
   readonly settings: PatchableObjectBox<Settings>;
 
+  getClient(name: string): Client | undefined;
+
   getClients(bufNr: number): Client[];
+
+  notify(
+    name: string,
+    method: string,
+    params: ArrayOrObject,
+  ): Promise<unknown>;
 
   request(
     name: string,
@@ -46,9 +64,16 @@ export interface Lspoints {
     params: ArrayOrObject,
   ): Promise<unknown>;
 
+  subscribeAttach(callback: AttachCallback): void;
+
   subscribeNotify(
     method: string,
     callback: NotifyCallback,
+  ): void;
+
+  subscribeRequest(
+    method: string,
+    callback: RequestCallback,
   ): void;
 
   defineCommands(

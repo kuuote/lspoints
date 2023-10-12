@@ -1,8 +1,8 @@
-import { Denops } from "https://deno.land/x/lspoints@v0.0.2/deps/denops.ts";
+import { Denops } from "https://deno.land/x/lspoints@v0.0.3/deps/denops.ts";
 import {
   BaseExtension,
   Lspoints,
-} from "https://deno.land/x/lspoints@v0.0.2/interface.ts";
+} from "https://deno.land/x/lspoints@v0.0.3/interface.ts";
 
 // place to {runtimepath}/denops/@lspoints/config.ts
 
@@ -16,6 +16,18 @@ export class Extension extends BaseExtension {
           initializationOptions: {
             enable: true,
             unstable: true,
+          },
+        },
+        luals: {
+          cmd: ["lua-language-server"],
+          params: {
+            settings: {
+              Lua: {
+                diagnostics: {
+                  globals: ["vim"],
+                },
+              },
+            },
           },
         },
       },

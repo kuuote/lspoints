@@ -5,10 +5,12 @@ import { Lock } from "./deps/async.ts";
 import { autocmd, Denops } from "./deps/denops.ts";
 import { stdpath } from "./deps/std.ts";
 import {
+  AttachCallback,
   BaseExtension,
   Client,
   Command,
   NotifyCallback,
+  RequestCallback,
   Settings,
   StartOptions,
 } from "./interface.ts";
@@ -16,9 +18,22 @@ import { ArrayOrObject } from "./jsonrpc/message.ts";
 
 const lock = new Lock(null);
 
+// transform client implementation to description object
+function transformClient(client: LanguageClient): Client {
+  return {
+    name: client.name,
+    id: client.id,
+    serverCapabilities: client.serverCapabilities,
+    getUriFromBufNr: client.getUriFromBufNr.bind(client),
+    options: client.options,
+  };
+}
+
 export class Lspoints {
   commands: Record<string, Record<string, Command>> = {};
-  notifiers: Record<string, Array<NotifyCallback>> = {};
+  attachHandlers: Array<AttachCallback> = [];
+  notifyHandlers: Record<string, Array<NotifyCallback>> = {};
+  requestHandlers: Record<string, Array<RequestCallback>> = {};
   clients: Record<string, LanguageClient> = {};
   clientIDs: Record<number, LanguageClient> = {};
   settings: PatchableObjectBox<Settings> = new PatchableObjectBox({
@@ -111,9 +126,17 @@ export class Lspoints {
           .initialize(this.settings.get());
         this.clients[name] = client;
         this.clientIDs[client.id] = client;
-        this.clients[name].rpcClient.notifiers.push(async (msg) => {
-          for (const notifier of this.notifiers[msg.method] ?? []) {
+        client.rpcClient.notifyHandlers.push(async (msg) => {
+          for (const notifier of this.notifyHandlers[msg.method] ?? []) {
             await notifier(name, msg.params);
+          }
+        });
+        client.rpcClient.requestHandlers.push(async (msg) => {
+          for (const handler of this.requestHandlers[msg.method] ?? []) {
+            const result = await handler(name, msg.params);
+            if (result !== undefined) {
+              return result;
+            }
           }
         });
       });
@@ -130,6 +153,9 @@ export class Lspoints {
       name = client.name;
       await client.attach(bufNr);
     });
+    for (const handler of this.attachHandlers) {
+      await handler(name);
+    }
     await autocmd.group(
       denops,
       "lspoints.internal",
@@ -158,16 +184,19 @@ export class Lspoints {
     }
   }
 
+  getClient(name: number | string): Client | undefined {
+    const client = this.#getClient(name);
+    if (client == null) {
+      return;
+    }
+    return transformClient(client);
+  }
+
   getClients(bufNr: number): Client[] {
     return Object.entries(this.clients)
       .sort((a, b) => a[0].localeCompare(b[0]))
       .filter((entry) => entry[1].isAttached(bufNr))
-      .map((entry) => ({
-        name: entry[0],
-        id: entry[1].id,
-        serverCapabilities: entry[1].serverCapabilities,
-        getUriFromBufNr: entry[1].getUriFromBufNr.bind(entry[1]),
-      }));
+      .map((entry) => transformClient(entry[1]));
   }
 
   async notify(
@@ -220,11 +249,26 @@ export class Lspoints {
     });
   }
 
+  subscribeAttach(callback: AttachCallback) {
+    (this.attachHandlers = this.attachHandlers ?? []).push(callback);
+  }
+
   subscribeNotify(
     method: string,
     callback: NotifyCallback,
   ) {
-    (this.notifiers[method] = this.notifiers[method] ?? []).push(callback);
+    (this.notifyHandlers[method] = this.notifyHandlers[method] ?? []).push(
+      callback,
+    );
+  }
+
+  subscribeRequest(
+    method: string,
+    callback: RequestCallback,
+  ) {
+    (this.requestHandlers[method] = this.requestHandlers[method] ?? []).push(
+      callback,
+    );
   }
 
   defineCommands(extensionName: string, commands: Record<string, Command>) {

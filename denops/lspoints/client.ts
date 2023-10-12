@@ -2,6 +2,7 @@ import { Denops } from "./deps/denops.ts";
 import { LSP } from "./deps/lsp.ts";
 import { Settings, StartOptions } from "./interface.ts";
 import { JsonRpcClient, Tracer } from "./jsonrpc/jsonrpc_client.ts";
+import { version } from "./version.ts";
 
 export type ClientOptions = {
   rootPath?: string;
@@ -73,7 +74,7 @@ export class LanguageClient {
       {
         clientInfo: {
           name: "lspoints",
-          version: "v0.0.2",
+          version,
         },
         processId: Deno.pid,
         capabilities: settings.clientCapabilites,
