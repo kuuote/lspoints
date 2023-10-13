@@ -230,23 +230,21 @@ export class Lspoints {
   }
 
   async loadExtensions(denops: Denops, path: string[]) {
-    await lock.lock(async () => {
-      for (let p of path) {
-        if (p.indexOf("/") == -1) {
-          p = String(
-            await denops.eval(
-              `globpath(&runtimepath, 'denops/@lspoints/${p}.ts')`,
-            ),
-          ).replace(/\n.*/, "");
-        }
-        // NOTE: Import module with fragment so that reload works properly.
-        // https://github.com/vim-denops/denops.vim/issues/227
-        const mod = await import(
-          `${stdpath.toFileUrl(p).href}#${performance.now()}`
-        );
-        await (new mod.Extension() as BaseExtension).initialize(denops, this);
+    for (let p of path) {
+      if (p.indexOf("/") == -1) {
+        p = String(
+          await denops.eval(
+            `globpath(&runtimepath, 'denops/@lspoints/${p}.ts')`,
+          ),
+        ).replace(/\n.*/, "");
       }
-    });
+      // NOTE: Import module with fragment so that reload works properly.
+      // https://github.com/vim-denops/denops.vim/issues/227
+      const mod = await import(
+        `${stdpath.toFileUrl(p).href}#${performance.now()}`
+      );
+      await (new mod.Extension() as BaseExtension).initialize(denops, this);
+    }
   }
 
   subscribeAttach(callback: AttachCallback) {

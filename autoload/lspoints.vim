@@ -1,3 +1,5 @@
+let g:lspoints#extensions = []
+
 function lspoints#reload()
   autocmd User DenopsPluginPost:lspoints ++once echo 'lspoints reloaded'
   call denops#plugin#reload('lspoints')
@@ -10,7 +12,10 @@ function lspoints#attach(name, options = {})
 endfunction
 
 function lspoints#load_extensions(pathes)
-  call lspoints#denops#notify('loadExtensions', [a:pathes])
+  call extend(g:lspoints#extensions, a:pathes)
+  if denops#plugin#is_loaded('lspoints')
+    call lspoints#denops#notify('loadExtensions', [a:pathes])
+  endif
 endfunction
 
 function lspoints#get_clients(bufnr = bufnr())

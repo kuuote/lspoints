@@ -1,10 +1,18 @@
+" see also ./config.ts
+
+" function style
+call lspoints#load_extensions([
+\   'config',
+\   'format',
+\   'nvim_diagnostics',
+\ ])
+" or variable style
+let g:lspoints#extensions = [
+\   'config',
+\   'format',
+\   'nvim_diagnostics',
+\ ]
 function s:post() abort
-  " see also ./config.ts
-	call lspoints#load_extensions([
-	\   'config',
-	\   'format',
-	\   'nvim_diagnostics',
-	\ ])
   call lspoints#settings#patch(#{
   \   tracePath: '/tmp/lspoints',
   \ })

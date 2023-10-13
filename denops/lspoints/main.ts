@@ -72,7 +72,8 @@ export async function main(denops: Denops) {
     },
     async loadExtensions(ext: unknown) {
       u.assert(ext, u.isArrayOf(u.isString));
-      await lspoints.loadExtensions(denops, ext);
+      // from global, must be de-duplicate
+      await lspoints.loadExtensions(denops, [...new Set(ext)]);
     },
     async executeCommand(
       extensionName: unknown,
@@ -89,4 +90,7 @@ export async function main(denops: Denops) {
     helper.define("User", "LspointsAttach:*", ":");
   });
   loadBuiltins(denops, lspoints);
+  await denops.dispatcher.loadExtensions(
+    await denops.eval("g:lspoints#extensions"),
+  );
 }

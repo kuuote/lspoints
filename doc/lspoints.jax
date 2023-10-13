@@ -60,8 +60,10 @@ lspoints#attach({name}, [{options}])
 
                                                   *lspoints#load_extensions()*
 lspoints#load_extensions({pathes})
-	{pathes} に指定されたリストから拡張を読み込みます。
-	各要素は文字列のリストで、名前が指定された場合は |'runtimepath'| より
+	{pathes} に指定されたリストを|g:lspoints#extensions|に追加し、
+	指定された拡張を読み込みます。
+	vimrc内でも実行可能で、その場合は追加だけが行われます。
+	各要素は文字列で、名前が指定された場合は |'runtimepath'| より
 	`denops/@lspoints/{path}.ts` にマッチする物が読み込まれます。
 	フルパスが指定されている場合はそのパスから読み込まれます。
 
@@ -80,5 +82,13 @@ lspoints#notify({name}, {method}, [{params}])
 lspoints#request({name}, {method}, [{params}])
 	{name} で示される言語サーバーに {method} のリクエストを、省略可能な
 	{params} を引数にして送信し、結果を返します。
+
+==============================================================================
+VARIABLE                                                   *lspoints-variable*
+
+                                                       *g:lspoints#extensions*
+
+	|lspoints#load_extensions()|に渡す物と同じ要素からなるリストです。
+	ここに指定した拡張はlspointsが起動する際に読み込まれます。
 
  vim:tw=78:ts=8:noet:ft=help:norl:
