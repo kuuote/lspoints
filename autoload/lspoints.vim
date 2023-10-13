@@ -6,10 +6,13 @@ function lspoints#reload()
 endfunction
 
 function lspoints#attach(name, options = {})
+  call lspoints#denops#register()
   let bufnr = bufnr()
   call lspoints#denops#notify('start', [a:name, a:options])
   call lspoints#denops#notify('attach', [a:name, bufnr])
 endfunction
+
+" notify method
 
 function lspoints#load_extensions(pathes)
   call extend(g:lspoints#extensions, a:pathes)
@@ -18,12 +21,14 @@ function lspoints#load_extensions(pathes)
   endif
 endfunction
 
-function lspoints#get_clients(bufnr = bufnr())
-  return lspoints#denops#request('getClients', [a:bufnr])
-endfunction
-
 function lspoints#notify(name, method, params = {})
   call lspoints#denops#notify('notify', [a:name, a:method, a:params])
+endfunction
+
+" request method
+
+function lspoints#get_clients(bufnr = bufnr())
+  return lspoints#denops#request('getClients', [a:bufnr])
 endfunction
 
 function lspoints#request(name, method, params = {})
