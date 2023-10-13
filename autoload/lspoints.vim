@@ -1,4 +1,4 @@
-let g:lspoints#extensions = []
+let g:lspoints#extensions = get(g:, 'lspoints#extensions', [])
 
 function lspoints#reload()
   autocmd User DenopsPluginPost:lspoints ++once echo 'lspoints reloaded'
