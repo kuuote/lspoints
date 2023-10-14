@@ -68,9 +68,6 @@ export class JsonRpcClient {
                     return;
                   }
                 }
-                // TODO: ログの出し方を変える
-                console.log("unresolved request: " + chunk.id);
-                console.log(chunk);
               })().catch(console.trace);
             } else if (isResponseMessage(chunk)) {
               const id = Number(chunk.id);
