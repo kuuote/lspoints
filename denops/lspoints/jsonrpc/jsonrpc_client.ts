@@ -73,8 +73,8 @@ export class JsonRpcClient {
               const id = Number(chunk.id);
               const cb = this.#requestPool[id];
               if (cb == null) {
-                console.log("unresolved response: " + id);
-                console.log(chunk);
+                // console.log("unresolved response: " + id);
+                // console.log(chunk);
               } else {
                 if (chunk.result !== undefined) { // contains null
                   cb[0](chunk.result);
