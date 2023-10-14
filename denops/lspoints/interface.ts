@@ -25,8 +25,9 @@ export type Client = {
 };
 
 export type Settings = {
-  startOptions: Record<string, StartOptions>;
   clientCapabilites: LSP.ClientCapabilities;
+  startOptions: Record<string, StartOptions>;
+  requestTimeout: number;
   tracePath?: string;
 };
 

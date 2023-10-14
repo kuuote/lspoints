@@ -1,6 +1,6 @@
-import { deadline } from "https://deno.land/std@0.203.0/async/mod.ts";
 import { Denops } from "../lspoints/deps/denops.ts";
 import { LSP } from "../lspoints/deps/lsp.ts";
+import { deadline } from "../lspoints/deps/std.ts";
 import { u } from "../lspoints/deps/unknownutil.ts";
 import { BaseExtension, Lspoints } from "../lspoints/interface.ts";
 import {

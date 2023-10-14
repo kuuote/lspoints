@@ -1,5 +1,5 @@
 import { PatchableObjectBox } from "./box.ts";
-import { deepMerge } from "./deps/std.ts";
+import { deadline, DeadlineError, deepMerge } from "./deps/std.ts";
 import { LanguageClient } from "./client.ts";
 import { Lock } from "./deps/async.ts";
 import { autocmd, Denops } from "./deps/denops.ts";
@@ -93,6 +93,7 @@ export class Lspoints {
         },
       },
     },
+    requestTimeout: 5000,
     startOptions: {},
   });
 
@@ -226,7 +227,29 @@ export class Lspoints {
     if (client == null) {
       throw Error(`client "${id}" is not started`);
     }
-    return await client.rpcClient.request(method, params);
+    const timeout = this.settings.get().requestTimeout;
+    return await deadline(client.rpcClient.request(method, params), timeout)
+      .catch((e) => {
+        if (!(e instanceof DeadlineError)) {
+          return Promise.reject(e);
+        }
+        return client.denops.cmd(
+          [
+            "echohl Error",
+            'echomsg "lspoints: request timeout"',
+            "echomsg client",
+            "echomsg method",
+            "for p in params | echomsg p | endfor",
+            "echohl None",
+          ].join("\n"),
+          {
+            client: "client: " + client.name,
+            method: "method: " + method,
+            params: ("params: " + JSON.stringify(params, undefined, "  "))
+              .split("\n"),
+          },
+        );
+      });
   }
 
   async loadExtensions(denops: Denops, path: string[]) {
