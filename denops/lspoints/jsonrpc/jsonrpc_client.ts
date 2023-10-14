@@ -6,7 +6,7 @@ import {
   NotifyMessage,
   RequestMessage,
 } from "./message.ts";
-import { concat } from "https://deno.land/std@0.203.0/bytes/concat.ts";
+import { concat } from "https://deno.land/std@0.204.0/bytes/concat.ts";
 
 type Promisify<T> = T | Promise<T>;
 
