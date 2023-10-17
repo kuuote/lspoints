@@ -32,5 +32,5 @@ function lspoints#get_clients(bufnr = bufnr())
 endfunction
 
 function lspoints#request(name, method, params = {})
-  return lspoints#denops#request('lspoints', 'request', [a:name, a:method, a:params])
+  return lspoints#denops#request('request', [a:name, a:method, a:params])
 endfunction
