@@ -60,6 +60,7 @@ const isResponseError: u.Predicate<ResponseError> = u.isObjectOf({
     u.isNumber,
     u.isBoolean,
     isArrayOrObject,
+    u.isNull,
   ])),
 });
 
