@@ -1,3 +1,4 @@
+import { TextLineStream } from "../deps/std.ts";
 import { JsonRpcStream } from "./jsonrpc_stream.ts";
 import {
   isNotifyMessage,
@@ -19,9 +20,33 @@ function jsonRpcEncode(data: unknown): Uint8Array {
   return concat(headerRaw, buf);
 }
 
-export interface Tracer {
-  r: (msg: unknown) => void | Promise<void>;
-  w: (msg: unknown) => void | Promise<void>;
+class Logger {
+  handlers = new Array<LogHandler>();
+
+  onRead(msg: unknown) {
+    for (const handler of this.handlers) {
+      handler.onRead?.(msg);
+    }
+  }
+  onWrite(msg: unknown) {
+    for (const handler of this.handlers) {
+      handler.onWrite?.(msg);
+    }
+  }
+  onStderr(msg: string) {
+    for (const handler of this.handlers) {
+      handler.onStderr?.(msg);
+    }
+  }
+  subscribe(handler: LogHandler) {
+    this.handlers.push(handler);
+  }
+}
+
+export interface LogHandler {
+  onRead?: (msg: unknown) => Promisify<void>;
+  onWrite?: (msg: unknown) => Promisify<void>;
+  onStderr?: (msg: string) => Promisify<void>;
 }
 
 export class JsonRpcClient {
@@ -36,7 +61,7 @@ export class JsonRpcClient {
   requestHandlers: Array<
     (msg: RequestMessage) => Promisify<unknown | undefined>
   > = [];
-  tracers: Array<Tracer> = [];
+  logger = new Logger();
 
   constructor(command: string[]) {
     this.#process = new Deno.Command(command[0], {
@@ -50,11 +75,7 @@ export class JsonRpcClient {
       .pipeTo(
         new WritableStream({
           write: (chunk: unknown) => {
-            if (this.tracers.length != 0) {
-              for (const t of this.tracers) {
-                t.r(chunk);
-              }
-            }
+            this.logger.onRead(chunk);
             if (isRequestMessage(chunk)) {
               (async () => {
                 for (const handler of this.requestHandlers) {
@@ -94,15 +115,21 @@ export class JsonRpcClient {
           },
         }),
       );
+    this.#process.stderr
+      .pipeThrough(new TextDecoderStream())
+      .pipeThrough(new TextLineStream())
+      .pipeTo(
+        new WritableStream({
+          write: (line: string) => {
+            this.logger.onStderr(line);
+          },
+        }),
+      );
     this.#w = this.#process.stdin.getWriter();
   }
 
   async #sendMessage(msg: unknown) {
-    if (this.tracers.length != 0) {
-      for (const t of this.tracers) {
-        t.w(msg);
-      }
-    }
+    this.logger.onWrite(msg);
     await this.#w.write(jsonRpcEncode(msg));
   }
 

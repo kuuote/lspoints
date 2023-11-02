@@ -1,7 +1,7 @@
 import { Denops } from "./deps/denops.ts";
 import { LSP } from "./deps/lsp.ts";
 import { Settings, StartOptions } from "./interface.ts";
-import { JsonRpcClient, Tracer } from "./jsonrpc/jsonrpc_client.ts";
+import { JsonRpcClient, LogHandler } from "./jsonrpc/jsonrpc_client.ts";
 import { version } from "./version.ts";
 
 export type ClientOptions = {
@@ -10,7 +10,10 @@ export type ClientOptions = {
   initializationOptions?: Record<string, unknown>;
 };
 
-async function prettyTracer(clientName: string, dir: string): Promise<Tracer> {
+async function createPrettyTracer(
+  clientName: string,
+  dir: string,
+): Promise<LogHandler> {
   await Deno.mkdir(dir).catch(() => {});
   const path = dir.replace(/\/?$/, "/") + `${clientName}_${Date.now()}.log`;
   async function write(type: string, msg: unknown) {
@@ -24,11 +27,14 @@ async function prettyTracer(clientName: string, dir: string): Promise<Tracer> {
     });
   }
   return {
-    r: async (msg) => {
+    onRead: async (msg) => {
       await write("r", msg);
     },
-    w: async (msg) => {
+    onWrite: async (msg) => {
       await write("w", msg);
+    },
+    onStderr: async (msg) => {
+      await write("e", msg);
     },
   };
 }
@@ -58,9 +64,10 @@ export class LanguageClient {
   }
 
   async initialize(settings: Settings) {
+    console.log(settings.tracePath);
     if (settings.tracePath != null) {
-      this.rpcClient.tracers.push(
-        await prettyTracer(this.name, settings.tracePath),
+      this.rpcClient.logger.subscribe(
+        await createPrettyTracer(this.name, settings.tracePath),
       );
     }
     let rootUri: string | null = null;
