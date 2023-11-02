@@ -23,11 +23,24 @@ function lspoints#denops#notify(method, params)
     \   a:method,
     \   string(a:params),
     \ )
+  else
+    call denops#plugin#wait_async('lspoints', {->denops#notify('lspoints', a:method, a:params)})
   endif
-  call denops#plugin#wait_async('lspoints', {->denops#notify('lspoints', a:method, a:params)})
 endfunction
 
-function lspoints#denops#request(method, params)
+function lspoints#denops#request(method, params, wait_async = v:false)
+  if a:wait_async
+    if !s:registered
+      execute printf(
+      \   'autocmd User DenopsPluginPost:lspoints call denops#request("lspoints", "%s", %s)',
+      \   a:method,
+      \   string(a:params),
+      \ )
+    else
+      call denops#plugin#wait_async('lspoints', {->denops#request('lspoints', a:method, a:params)})
+    endif
+    return
+  endif
   if !s:registered
     throw 'lspoints is not registered'
   endif
