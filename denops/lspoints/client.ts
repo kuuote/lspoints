@@ -64,7 +64,6 @@ export class LanguageClient {
   }
 
   async initialize(settings: Settings) {
-    console.log(settings.tracePath);
     if (settings.tracePath != null) {
       this.rpcClient.logger.subscribe(
         await createPrettyTracer(this.name, settings.tracePath),
