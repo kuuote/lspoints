@@ -1,9 +1,10 @@
 import { PatchableObjectBox } from "./box.ts";
-import { deadline, DeadlineError, deepMerge } from "./deps/std.ts";
 import { LanguageClient } from "./client.ts";
 import { Lock } from "./deps/async.ts";
 import { autocmd, Denops } from "./deps/denops.ts";
-import { stdpath } from "./deps/std.ts";
+import { deadline, DeadlineError } from "./deps/std/async.ts";
+import { deepMerge } from "./deps/std/deep_merge.ts";
+import { stdpath } from "./deps/std/path.ts";
 import {
   AttachCallback,
   BaseExtension,

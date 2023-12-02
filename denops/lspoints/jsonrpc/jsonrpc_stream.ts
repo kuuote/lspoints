@@ -1,5 +1,4 @@
-import { concat } from "https://deno.land/std@0.204.0/bytes/concat.ts";
-import { indexOfNeedle } from "https://deno.land/std@0.204.0/bytes/index_of_needle.ts";
+import { concat, indexOfNeedle } from "../deps/std/bytes.ts";
 
 const rn = new Uint8Array([0xd, 0xa]);
 const decoder = new TextDecoder();
@@ -26,7 +25,7 @@ export class JsonRpcStream extends TransformStream<Uint8Array, unknown> {
     chunk: Uint8Array,
     controller: TransformStreamDefaultController<unknown>,
   ) {
-    this.#buf = concat(this.#buf, chunk);
+    this.#buf = concat([this.#buf, chunk]);
     while (true) {
       if (this.#mode === Mode.Header) {
         while (true) {

@@ -1,4 +1,5 @@
-import { TextLineStream } from "../deps/std.ts";
+import { concat } from "../deps/std/bytes.ts";
+import { TextLineStream } from "../deps/std/stream.ts";
 import { JsonRpcStream } from "./jsonrpc_stream.ts";
 import {
   isNotifyMessage,
@@ -7,7 +8,6 @@ import {
   NotifyMessage,
   RequestMessage,
 } from "./message.ts";
-import { concat } from "https://deno.land/std@0.204.0/bytes/concat.ts";
 
 type Promisify<T> = T | Promise<T>;
 
@@ -17,7 +17,7 @@ function jsonRpcEncode(data: unknown): Uint8Array {
   const buf = encoder.encode(JSON.stringify(data));
   const header = `Content-Length: ${buf.byteLength}\r\n\r\n`;
   const headerRaw = encoder.encode(header);
-  return concat(headerRaw, buf);
+  return concat([headerRaw, buf]);
 }
 
 class Logger {
