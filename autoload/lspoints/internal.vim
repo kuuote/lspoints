@@ -1,4 +1,4 @@
-function lspoints#internal#notify_change_params(bufnr)
+function lspoints#internal#notify_change_params(bufnr) abort
   let changedtick = getbufvar(a:bufnr, 'changedtick')
   " Note: can't get changedtick from wiped buffer
   if empty(changedtick)
@@ -9,7 +9,7 @@ function lspoints#internal#notify_change_params(bufnr)
   return [a:bufnr, uri, text, changedtick]
 endfunction
 
-function lspoints#internal#notify_change(bufnr)
+function lspoints#internal#notify_change(bufnr) abort
   let params = lspoints#internal#notify_change_params(a:bufnr)
   if empty(params)
     return

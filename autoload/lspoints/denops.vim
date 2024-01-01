@@ -1,22 +1,25 @@
-" lazy load logic based on https://github.com/Shougo/ddu.vim/blob/main/autoload/ddu.vim
+" lazy load logic based on ddu.vim
 
 let s:registered = v:false
 
 const s:root_dir = '<sfile>'->expand()->fnamemodify(':h:h:h')
 const s:sep = has('win32') ? '\' : '/'
-function lspoints#denops#register()
+function lspoints#denops#register() abort
   if denops#server#status() !=# 'running'
     autocmd User DenopsReady ++once call lspoints#denops#register()
     return
   endif
-  call denops#plugin#register('lspoints',
-  \   [s:root_dir, 'denops', 'lspoints', 'app.ts']->join(s:sep),
-  \   #{ mode: 'skip' },
-  \ )
+  let path = [s:root_dir, 'denops', 'lspoints', 'app.ts']->join(s:sep)
+  try
+    call denops#plugin#load('lspoints', path)
+  catch /^Vim\%((\a\+)\)\=:E117:/
+    " Fallback to `register` for backward compatibility
+    call denops#plugin#register('lspoints', path, #{ mode: 'skip' })
+  endtry
   let s:registered = v:true
 endfunction
 
-function lspoints#denops#notify(method, params)
+function lspoints#denops#notify(method, params) abort
   if !s:registered
     execute printf(
     \   'autocmd User DenopsPluginPost:lspoints call denops#notify("lspoints", "%s", %s)',
@@ -28,7 +31,7 @@ function lspoints#denops#notify(method, params)
   endif
 endfunction
 
-function lspoints#denops#request(method, params, wait_async = v:false)
+function lspoints#denops#request(method, params, wait_async = v:false) abort
   if a:wait_async
     if !s:registered
       execute printf(
