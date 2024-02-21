@@ -1,90 +1,65 @@
-import { u } from "../deps/unknownutil.ts";
+import { is, u } from "../deps/unknownutil.ts";
 
-export type ArrayOrObject = Array<unknown> | Record<string, unknown>;
-
-export const isArrayOrObject: u.Predicate<ArrayOrObject> = u.isOneOf([
-  u.isArray,
-  u.isRecord,
+export const isArrayOrObject = is.UnionOf([
+  is.Array,
+  is.Record,
 ]);
 
-interface Message {
-  jsonrpc: "2.0";
-}
+export type ArrayOrObject = u.PredicateType<typeof isArrayOrObject>;
 
-const isMessage: u.Predicate<Message> = u.isObjectOf({
-  jsonrpc: (x: unknown): x is "2.0" => x === "2.0",
+const isMessage = is.ObjectOf({
+  jsonrpc: is.LiteralOf("2.0"),
 });
 
-export interface NotifyMessage extends Message {
-  method: string;
-  params?: ArrayOrObject;
-}
-
-export const isNotifyMessage: u.Predicate<NotifyMessage> = u.isAllOf([
+export const isNotifyMessage = is.IntersectionOf([
   isMessage,
-  u.isObjectOf({
-    method: u.isString,
-    params: u.isOptionalOf(isArrayOrObject),
+  is.ObjectOf({
+    method: is.String,
+    params: is.OptionalOf(isArrayOrObject),
   }),
 ]);
 
-export interface RequestMessage extends Message {
-  id: number | string;
-  method: string;
-  params?: ArrayOrObject;
-}
+export type NotifyMessage = u.PredicateType<typeof isNotifyMessage>;
 
-export const isRequestMessage: u.Predicate<RequestMessage> = u.isAllOf([
-  isMessage,
-  u.isObjectOf({
-    id: u.isOneOf([
-      u.isNumber,
-      u.isString,
-    ]),
-    method: u.isString,
-    params: u.isOptionalOf(isArrayOrObject),
+const isID = is.UnionOf([
+  is.Number,
+  is.String,
+]);
+
+export const isRequestMessage = is.IntersectionOf([
+  isNotifyMessage,
+  is.ObjectOf({
+    id: isID,
   }),
 ]);
 
-interface ResponseError {
-  code: number;
-  message: string;
-  data?: string | number | boolean | ArrayOrObject | null;
-}
+export type RequestMessage = u.PredicateType<typeof isRequestMessage>;
 
-const isResponseError: u.Predicate<ResponseError> = u.isObjectOf({
-  code: u.isNumber,
-  message: u.isString,
-  data: u.isOptionalOf(u.isOneOf([
-    u.isString,
-    u.isNumber,
-    u.isBoolean,
+const isResponseError = is.ObjectOf({
+  code: is.Number,
+  message: is.String,
+  data: is.OptionalOf(is.UnionOf([
+    is.String,
+    is.Number,
+    is.Boolean,
     isArrayOrObject,
-    u.isNull,
+    is.Null,
   ])),
 });
 
-export interface ResponseMessage extends Message {
-  id: number | string | null;
-  result?: string | number | boolean | ArrayOrObject | null;
-  error?: ResponseError;
-}
-
-export const isResponseMessage: u.Predicate<ResponseMessage> = u.isAllOf([
+export const isResponseMessage = is.IntersectionOf([
   isMessage,
-  u.isObjectOf({
-    id: u.isOneOf([
-      u.isNumber,
-      u.isString,
-      u.isNull,
-    ]),
-    result: u.isOptionalOf(u.isOneOf([
-      u.isString,
-      u.isNumber,
-      u.isBoolean,
+  is.ObjectOf({
+    id: isID,
+    result: is.OptionalOf(is.UnionOf([
+      is.String,
+      is.Number,
+      is.Boolean,
       isArrayOrObject,
-      u.isNull,
+      is.Null,
     ])),
-    error: u.isOptionalOf(isResponseError),
+    error: is.OptionalOf(isResponseError),
   }),
 ]);
+
+export type ResponseMessage = u.PredicateType<typeof isResponseMessage>;
