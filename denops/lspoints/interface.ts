@@ -8,6 +8,7 @@ type Promisify<T> = T | Promise<T>;
 
 export const isStartOptions = u.isObjectOf({
   cmd: u.isOptionalOf(u.isArrayOf(u.isString)),
+  cmdOptions: u.isOptionalOf(u.isRecordOf(u.isUnknown)),
   initializationOptions: u.isOptionalOf(u.isRecord),
   params: u.isOptionalOf(u.isRecord),
   rootPath: u.isOptionalOf(u.isString),

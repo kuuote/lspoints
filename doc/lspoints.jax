@@ -55,6 +55,10 @@ lspoints#attach({name}, [{options}])
 
 	cmd:
 		サーバーを起動するためのコマンドライン。文字列のリスト。
+	cmdOptions:
+		サーバーを起動する際に `Deno.Command()` の `options` 引数に渡
+		す辞書です。ただし `args`, `stdin`, `stdout`, `sterr`の4つの
+		フィールドの値は内部的に決定されます。
 	initializationOptions:
 		サーバーに渡される初期化オプション
 

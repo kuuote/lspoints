@@ -63,8 +63,12 @@ export class JsonRpcClient {
   > = [];
   logger = new Logger();
 
-  constructor(command: string[]) {
+  constructor(
+    command: string[],
+    options?: Record<string, unknown>,
+  ) {
     this.#process = new Deno.Command(command[0], {
+      ...options,
       args: command.slice(1),
       stdin: "piped",
       stdout: "piped",
