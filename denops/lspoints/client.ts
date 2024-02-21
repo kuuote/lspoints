@@ -60,7 +60,10 @@ export class LanguageClient {
     if (startOptions.cmd == null) {
       throw "cmd not specify";
     }
-    this.rpcClient = new JsonRpcClient(startOptions.cmd);
+    this.rpcClient = new JsonRpcClient(
+      startOptions.cmd,
+      startOptions.cmdOptions,
+    );
   }
 
   async initialize(settings: Settings) {
