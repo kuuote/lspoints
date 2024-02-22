@@ -5,7 +5,7 @@ import { u } from "../lspoints/deps/unknownutil.ts";
 import { BaseExtension, Lspoints } from "../lspoints/interface.ts";
 import {
   applyTextEdits,
-} from "https://deno.land/x/denops_lsputil@v0.6.1/mod.ts";
+} from "https://deno.land/x/denops_lsputil@v0.9.3/mod.ts";
 
 export class Extension extends BaseExtension {
   initialize(denops: Denops, lspoints: Lspoints) {
