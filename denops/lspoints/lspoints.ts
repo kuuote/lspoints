@@ -26,6 +26,8 @@ function transformClient(client: LanguageClient): Client {
     id: client.id,
     serverCapabilities: client.serverCapabilities,
     getUriFromBufNr: client.getUriFromBufNr.bind(client),
+    getDocumentVersion: client.getDocumentVersion.bind(client),
+    isAttached: client.isAttached.bind(client),
     options: client.options,
   };
 }
