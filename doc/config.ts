@@ -1,8 +1,8 @@
-import { Denops } from "https://deno.land/x/lspoints@v0.0.5/deps/denops.ts";
+import { Denops } from "https://deno.land/x/lspoints@v0.0.6/deps/denops.ts";
 import {
   BaseExtension,
   Lspoints,
-} from "https://deno.land/x/lspoints@v0.0.5/interface.ts";
+} from "https://deno.land/x/lspoints@v0.0.6/interface.ts";
 
 // place to {runtimepath}/denops/@lspoints/config.ts
 
