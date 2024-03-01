@@ -49,6 +49,7 @@ export class LanguageClient {
   id = clientID++;
   rpcClient: JsonRpcClient;
   #attachedBuffers: Record<number, string> = {};
+  #documentVersions: Record<string, number> = {};
 
   serverCapabilities: LSP.ServerCapabilities = {};
 
@@ -110,6 +111,10 @@ export class LanguageClient {
     return this.#attachedBuffers[bufNr] ?? "";
   }
 
+  getDocumentVersion(bufNr: number) {
+    return this.#documentVersions[this.#attachedBuffers[bufNr] ?? ""] ?? -1;
+  }
+
   isAttached(bufNr: number): boolean {
     return this.#attachedBuffers[bufNr] != null;
   }
@@ -144,6 +149,7 @@ export class LanguageClient {
       this.#attachedBuffers[bufNr] = uri;
       return;
     }
+    this.#documentVersions[uri] = version;
     await this.rpcClient.notify("textDocument/didChange", {
       textDocument: {
         uri,

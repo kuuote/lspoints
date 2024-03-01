@@ -22,6 +22,8 @@ export type Client = {
   id: number;
   serverCapabilities: LSP.ServerCapabilities;
   getUriFromBufNr(bufnr: number): string;
+  getDocumentVersion(bufnr: number): number;
+  isAttached(bufnr: number): boolean;
   options: StartOptions;
 };
 
