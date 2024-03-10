@@ -10,6 +10,7 @@ export const isStartOptions = is.ObjectOf({
   cmd: is.OptionalOf(is.ArrayOf(is.String)),
   cmdOptions: is.OptionalOf(is.RecordOf(is.Unknown)),
   initializationOptions: is.OptionalOf(is.Record),
+  settings: is.OptionalOf(is.Record),
   params: is.OptionalOf(is.Record),
   rootPath: is.OptionalOf(is.String),
   rootUri: is.OptionalOf(is.String),

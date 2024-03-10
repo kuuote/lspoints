@@ -10,7 +10,7 @@ function getSettings(
   if (client == null) {
     return;
   }
-  const settings = client.options.params?.settings;
+  const settings = client.options.settings ?? client.options.params?.settings;
   return u.maybe(settings, u.isRecord);
 }
 

@@ -61,6 +61,10 @@ lspoints#attach({name}, [{options}])
 		フィールドの値は内部的に決定されます。
 	initializationOptions:
 		サーバーに渡される初期化オプション
+	settings:
+		ワークスペース設定の初期値。
+		`workspace/didChangeConfiguration` 及び
+		`workspace/configuration` によりサーバーに渡されます。
 
                                                   *lspoints#load_extensions()*
 lspoints#load_extensions({pathes})
