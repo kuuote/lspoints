@@ -24,11 +24,13 @@ function s:attach_denols() abort
   " Vim script way to given options
   call lspoints#attach('denols', #{
   \   cmd: ['deno', 'lsp'],
-  \   initializationOptions: #{
-  \     enable: v:true,
-  \     unstable: v:true,
-  \     suggest: #{
-  \       autoImports: v:false,
+  \   settings: #{
+  \     deno: #{
+  \       enable: v:true,
+  \       unstable: v:true,
+  \       suggest: #{
+  \         autoImports: v:false,
+  \       },
   \     },
   \   },
   \ })
