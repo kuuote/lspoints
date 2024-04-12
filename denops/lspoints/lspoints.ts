@@ -307,5 +307,3 @@ export class Lspoints {
     return await this.commands[extensionName][command](...args);
   }
 }
-
-export const lspoints = new Lspoints();

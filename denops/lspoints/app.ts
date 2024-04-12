@@ -3,7 +3,7 @@ import { autocmd, Denops } from "./deps/denops.ts";
 import { u } from "./deps/unknownutil.ts";
 import { isStartOptions, Settings } from "./interface.ts";
 import { isArrayOrObject } from "./jsonrpc/message.ts";
-import { lspoints } from "./lspoints.ts";
+import { Lspoints } from "./lspoints.ts";
 
 const isNumberOrString = u.isOneOf([
   u.isNumber,
@@ -11,6 +11,7 @@ const isNumberOrString = u.isOneOf([
 ]);
 
 export async function main(denops: Denops) {
+  const lspoints = new Lspoints();
   denops.dispatcher = {
     getSettings() {
       return lspoints.settings.get();
