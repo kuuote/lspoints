@@ -30,6 +30,11 @@ export async function main(denops: Denops) {
       u.assert(startOptions, isStartOptions);
       await lspoints.start(denops, name, startOptions);
     },
+    // kill all clients for lspoints#reload
+    // to avoids dangling process
+    killall() {
+      lspoints.killall();
+    },
     async attach(id: unknown, bufNr: unknown) {
       u.assert(id, isNumberOrString);
       u.assert(bufNr, u.isNumber);

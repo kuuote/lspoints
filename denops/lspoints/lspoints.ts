@@ -147,6 +147,14 @@ export class Lspoints {
     }
   }
 
+  // kill all clients for lspoints#reload
+  // to avoids dangling process
+  killall() {
+    for (const client of Object.values(this.clients)) {
+      client.kill();
+    }
+  }
+
   async attach(denops: Denops, id: string | number, bufNr: number) {
     let name = "";
     await lock.lock(async () => {

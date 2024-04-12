@@ -2,6 +2,7 @@ let g:lspoints#extensions = get(g:, 'lspoints#extensions', [])
 
 function lspoints#reload() abort
   autocmd User DenopsPluginPost:lspoints ++once echo 'lspoints reloaded'
+  call lspoints#denops#request('killall', [])
   call denops#plugin#reload('lspoints')
 endfunction
 

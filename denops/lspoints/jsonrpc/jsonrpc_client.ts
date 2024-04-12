@@ -132,6 +132,10 @@ export class JsonRpcClient {
     this.#w = this.#process.stdin.getWriter();
   }
 
+  kill() {
+    this.#process.kill();
+  }
+
   async #sendMessage(msg: unknown) {
     this.logger.onWrite(msg);
     await this.#w.write(jsonRpcEncode(msg));

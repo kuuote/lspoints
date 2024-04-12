@@ -67,6 +67,10 @@ export class LanguageClient {
     );
   }
 
+  kill() {
+    this.rpcClient.kill();
+  }
+
   async initialize(settings: Settings) {
     if (settings.tracePath != null) {
       this.rpcClient.logger.subscribe(
