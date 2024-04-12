@@ -1,4 +1,4 @@
-import { DeepMergeOptions, deepMerge } from "./deps/std/deep_merge.ts";
+import { deepMerge, DeepMergeOptions } from "./deps/std/deep_merge.ts";
 
 export class PatchableObjectBox<T extends Record<PropertyKey, unknown>> {
   #store: T;

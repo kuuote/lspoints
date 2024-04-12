@@ -1,13 +1,13 @@
 import { loadBuiltins } from "./builtins.ts";
 import { autocmd, Denops } from "./deps/denops.ts";
-import { u } from "./deps/unknownutil.ts";
+import { is, u } from "./deps/unknownutil.ts";
 import { isStartOptions, Settings } from "./interface.ts";
 import { isArrayOrObject } from "./jsonrpc/message.ts";
 import { Lspoints } from "./lspoints.ts";
 
-const isNumberOrString = u.isOneOf([
-  u.isNumber,
-  u.isString,
+const isNumberOrString = is.UnionOf([
+  is.Number,
+  is.String,
 ]);
 
 export async function main(denops: Denops) {
@@ -26,7 +26,7 @@ export async function main(denops: Denops) {
       name: unknown,
       startOptions: unknown = {},
     ) {
-      u.assert(name, u.isString);
+      u.assert(name, is.String);
       u.assert(startOptions, isStartOptions);
       await lspoints.start(denops, name, startOptions);
     },
@@ -37,7 +37,7 @@ export async function main(denops: Denops) {
     },
     async attach(id: unknown, bufNr: unknown) {
       u.assert(id, isNumberOrString);
-      u.assert(bufNr, u.isNumber);
+      u.assert(bufNr, is.Number);
       await lspoints.attach(denops, id, bufNr);
     },
     async notifyChange(
@@ -46,14 +46,14 @@ export async function main(denops: Denops) {
       text: unknown,
       changedtick: unknown,
     ) {
-      u.assert(bufNr, u.isNumber);
-      u.assert(uri, u.isString);
-      u.assert(text, u.isString);
-      u.assert(changedtick, u.isNumber);
+      u.assert(bufNr, is.Number);
+      u.assert(uri, is.String);
+      u.assert(text, is.String);
+      u.assert(changedtick, is.Number);
       await lspoints.notifyChange(bufNr, uri, text, changedtick);
     },
     getClients(bufNr: unknown) {
-      u.assert(bufNr, u.isNumber);
+      u.assert(bufNr, is.Number);
       return lspoints.getClients(bufNr);
     },
     async notify(
@@ -62,8 +62,8 @@ export async function main(denops: Denops) {
       params: unknown = {},
     ): Promise<void> {
       u.assert(id, isNumberOrString);
-      u.assert(method, u.isString);
-      u.assert(params, u.isOptionalOf(isArrayOrObject));
+      u.assert(method, is.String);
+      u.assert(params, is.OptionalOf(isArrayOrObject));
       await lspoints.notify(id, method, params);
     },
     async request(
@@ -72,12 +72,12 @@ export async function main(denops: Denops) {
       params: unknown = {},
     ): Promise<unknown> {
       u.assert(id, isNumberOrString);
-      u.assert(method, u.isString);
-      u.assert(params, u.isOptionalOf(isArrayOrObject));
+      u.assert(method, is.String);
+      u.assert(params, is.OptionalOf(isArrayOrObject));
       return await lspoints.request(id, method, params);
     },
     async loadExtensions(ext: unknown) {
-      u.assert(ext, u.isArrayOf(u.isString));
+      u.assert(ext, is.ArrayOf(is.String));
       // from global, must be de-duplicate
       await lspoints.loadExtensions(denops, [...new Set(ext)]);
     },
@@ -86,8 +86,8 @@ export async function main(denops: Denops) {
       command: unknown,
       ...args: unknown[]
     ) {
-      u.assert(extensionName, u.isString);
-      u.assert(command, u.isString);
+      u.assert(extensionName, is.String);
+      u.assert(command, is.String);
       return await lspoints.executeCommand(extensionName, command, ...args);
     },
   };
