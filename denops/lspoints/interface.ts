@@ -21,6 +21,8 @@ export type StartOptions = u.PredicateType<typeof isStartOptions>;
 export type Client = {
   name: string;
   id: number;
+  notify: (method: string, params?: ArrayOrObject) => Promise<void>;
+  request: (method: string, params?: ArrayOrObject) => Promise<unknown>;
   serverCapabilities: LSP.ServerCapabilities;
   getUriFromBufNr(bufnr: number): string;
   getDocumentVersion(bufnr: number): number;

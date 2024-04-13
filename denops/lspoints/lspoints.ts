@@ -29,6 +29,8 @@ function transformClient(client: LanguageClient): Client {
   const transformed: Client = {
     name: client.name,
     id: client.id,
+    notify: client.rpcClient.notify.bind(client.rpcClient),
+    request: client.rpcClient.request.bind(client.rpcClient),
     serverCapabilities: client.serverCapabilities,
     getUriFromBufNr: client.getUriFromBufNr.bind(client),
     getDocumentVersion: client.getDocumentVersion.bind(client),
