@@ -19,9 +19,14 @@ import { ArrayOrObject } from "./jsonrpc/message.ts";
 
 const lock = new Lock(null);
 
+const clientCache = new WeakMap<LanguageClient, Client>();
 // transform client implementation to description object
 function transformClient(client: LanguageClient): Client {
-  return {
+  const cached = clientCache.get(client);
+  if (cached != null) {
+    return cached;
+  }
+  const transformed: Client = {
     name: client.name,
     id: client.id,
     serverCapabilities: client.serverCapabilities,
@@ -30,6 +35,8 @@ function transformClient(client: LanguageClient): Client {
     isAttached: client.isAttached.bind(client),
     options: client.options,
   };
+  clientCache.set(client, transformed);
+  return transformed;
 }
 
 export class Lspoints {
