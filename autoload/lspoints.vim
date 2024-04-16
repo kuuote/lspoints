@@ -6,13 +6,16 @@ function lspoints#reload() abort
   call denops#plugin#reload('lspoints')
 endfunction
 
-function lspoints#attach(name, options = {}) abort
+function lspoints#start(name, options = {}) abort
   call lspoints#denops#register()
-  let bufnr = bufnr()
   call lspoints#denops#notify('start', [a:name, a:options])
-  call lspoints#denops#notify('attach', [a:name, bufnr])
 endfunction
 
+function lspoints#attach(name, options = {}) abort
+  call lspoints#start(a:name, a:options)
+  let bufnr = bufnr()
+  call lspoints#denops#notify('attach', [a:name, bufnr])
+endfunction
 " notify method
 
 function lspoints#load_extensions(pathes) abort

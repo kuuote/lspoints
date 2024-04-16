@@ -46,12 +46,11 @@ lspoints#reload()
 	自動でサーバーが起動したりはしないため、何らかの方法で再起動する必要
 	があります。
 
-                                                           *lspoints#attach()*
-lspoints#attach({name}, [{options}])
-	カレントバッファに {name} で示される言語サーバーをアタッチします。
-	{options} は言語サーバーが立ち上がっていない時に起動するために
-	使用されます。立ち上がっている場合は無視されるため、省略も可能です。
-	以下の要素から成ります:
+                                                            *lspoints#start()*
+lspoints#start({name}, [{options}])
+	{name} で示される言語サーバーを起動します。
+	は言語サーバーが立ち上がっていない時に起動するために使用されます。
+	{options} は以下の要素から成ります:
 
 	cmd:
 		サーバーを起動するためのコマンドライン。文字列のリスト。
@@ -65,6 +64,13 @@ lspoints#attach({name}, [{options}])
 		ワークスペース設定の初期値。
 		`workspace/didChangeConfiguration` 及び
 		`workspace/configuration` によりサーバーに渡されます。
+
+                                                           *lspoints#attach()*
+lspoints#attach({name}, [{options}])
+	カレントバッファに {name} で示される言語サーバーをアタッチします。
+	{options} は言語サーバーが立ち上がっていない時に起動するために
+	使用されます。立ち上がっている場合は無視されるため、省略も可能です。
+	|lspoints#start()| に渡されます。
 
                                                   *lspoints#load_extensions()*
 lspoints#load_extensions({pathes})
