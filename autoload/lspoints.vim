@@ -13,8 +13,7 @@ endfunction
 
 function lspoints#attach(name, options = {}) abort
   call lspoints#start(a:name, a:options)
-  let bufnr = bufnr()
-  call lspoints#denops#notify('attach', [a:name, bufnr])
+  call lspoints#denops#notify('attach', [a:name, bufnr()])
 endfunction
 " notify method
 
