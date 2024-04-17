@@ -158,6 +158,7 @@ export class JsonRpcClient {
   async request(
     method: string,
     params?: unknown[] | Record<string, unknown>,
+    options?: { signal?: AbortSignal },
   ): Promise<unknown> {
     const id = this.#requestId++;
     const msg: RequestMessage = {
@@ -169,6 +170,9 @@ export class JsonRpcClient {
       msg.params = params;
     }
     await this.#sendMessage(msg);
+    options?.signal?.addEventListener("abort", () => {
+      this.notify("$/cancelRequest", { id });
+    });
     return new Promise((resolve, reject) => {
       this.#requestPool[id] = [resolve, reject];
     });
