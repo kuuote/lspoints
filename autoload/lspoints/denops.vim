@@ -5,6 +5,9 @@ let s:registered = v:false
 const s:root_dir = '<sfile>'->expand()->fnamemodify(':h:h:h')
 const s:sep = has('win32') ? '\' : '/'
 function lspoints#denops#register() abort
+  if s:registered
+    return
+  endif
   if denops#server#status() !=# 'running'
     autocmd User DenopsReady ++once call lspoints#denops#register()
     return
@@ -21,14 +24,9 @@ endfunction
 
 function lspoints#denops#notify(method, params) abort
   if !s:registered
-    execute printf(
-    \   'autocmd User DenopsPluginPost:lspoints call denops#notify("lspoints", "%s", %s)',
-    \   a:method,
-    \   string(a:params),
-    \ )
-  else
-    call denops#plugin#wait_async('lspoints', {->denops#notify('lspoints', a:method, a:params)})
+    call lspoints#denops#register()
   endif
+  call denops#plugin#wait_async('lspoints', {->denops#notify('lspoints', a:method, a:params)})
 endfunction
 
 function lspoints#denops#request(method, params, wait_async = v:false) abort
