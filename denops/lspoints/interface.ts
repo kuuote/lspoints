@@ -22,7 +22,11 @@ export type Client = {
   name: string;
   id: number;
   notify: (method: string, params?: ArrayOrObject) => Promise<void>;
-  request: (method: string, params?: ArrayOrObject) => Promise<unknown>;
+  request: (
+    method: string,
+    params?: ArrayOrObject,
+    options?: { signal: AbortSignal },
+  ) => Promise<unknown>;
   serverCapabilities: LSP.ServerCapabilities;
   getUriFromBufNr(bufnr: number): string;
   getDocumentVersion(bufnr: number): number;
