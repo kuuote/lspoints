@@ -1,4 +1,1 @@
-export {
-  deepMerge,
-  type DeepMergeOptions,
-} from "https://deno.land/std@0.217.0/collections/deep_merge.ts";
+export { deepMerge, type DeepMergeOptions } from "jsr:@std/collections@^1.0.0";

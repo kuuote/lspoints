@@ -2,7 +2,7 @@ import { PatchableObjectBox } from "./box.ts";
 import { LanguageClient } from "./client.ts";
 import { Lock } from "./deps/async.ts";
 import { autocmd, Denops } from "./deps/denops.ts";
-import { deadline, DeadlineError } from "./deps/std/async.ts";
+import { deadline } from "./deps/std/async.ts";
 import { deepMerge } from "./deps/std/deep_merge.ts";
 import { stdpath } from "./deps/std/path.ts";
 import {
@@ -156,8 +156,7 @@ export class Lspoints {
     }
   }
 
-  // kill all clients for lspoints#reload
-  // to avoids dangling process
+  // kill all clients to avoids dangling process
   killall() {
     for (const client of Object.values(this.clients)) {
       client.kill();
@@ -250,7 +249,7 @@ export class Lspoints {
     const timeout = this.settings.get().requestTimeout;
     return await deadline(client.rpcClient.request(method, params), timeout)
       .catch((e) => {
-        if (!(e instanceof DeadlineError)) {
+        if (!(e instanceof DOMException)) {
           return Promise.reject(e);
         }
         return client.denops.cmd(

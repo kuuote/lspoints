@@ -1,4 +1,1 @@
-export {
-  deadline,
-  DeadlineError,
-} from "https://deno.land/std@0.217.0/async/mod.ts";
+export { deadline } from "jsr:@std/async@^1.0.0";

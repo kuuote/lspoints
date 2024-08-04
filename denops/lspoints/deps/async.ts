@@ -1,1 +1,1 @@
-export { Lock } from "https://deno.land/x/async@v2.1.0/mod.ts";
+export { Lock } from "jsr:@lambdalisue/async@^2.0.0";

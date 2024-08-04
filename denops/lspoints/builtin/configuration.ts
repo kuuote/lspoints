@@ -1,5 +1,5 @@
 import { Denops } from "../deps/denops.ts";
-import { u } from "../deps/unknownutil.ts";
+import { as, assert, is, maybe } from "../deps/unknownutil.ts";
 import { BaseExtension, Lspoints } from "../interface.ts";
 
 function getSettings(
@@ -11,7 +11,7 @@ function getSettings(
     return;
   }
   const settings = client.options.settings ?? client.options.params?.settings;
-  return u.maybe(settings, u.isRecord);
+  return maybe(settings, is.Record);
 }
 
 export class Extension extends BaseExtension {
@@ -29,11 +29,11 @@ export class Extension extends BaseExtension {
       "workspace/configuration",
       (clientName, params) => {
         const settings = getSettings(lspoints, clientName);
-        u.assert(
+        assert(
           params,
-          u.isObjectOf({
-            items: u.isArrayOf(u.isObjectOf({
-              section: u.isOptionalOf(u.isString),
+          is.ObjectOf({
+            items: is.ArrayOf(is.ObjectOf({
+              section: as.Optional(is.String),
             })),
           }),
         );

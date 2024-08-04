@@ -1,11 +1,11 @@
-import { is, u } from "../deps/unknownutil.ts";
+import { as, is, PredicateType } from "../deps/unknownutil.ts";
 
 export const isArrayOrObject = is.UnionOf([
   is.Array,
   is.Record,
 ]);
 
-export type ArrayOrObject = u.PredicateType<typeof isArrayOrObject>;
+export type ArrayOrObject = PredicateType<typeof isArrayOrObject>;
 
 const isMessage = is.ObjectOf({
   jsonrpc: is.LiteralOf("2.0"),
@@ -15,11 +15,11 @@ export const isNotifyMessage = is.IntersectionOf([
   isMessage,
   is.ObjectOf({
     method: is.String,
-    params: is.OptionalOf(isArrayOrObject),
+    params: as.Optional(isArrayOrObject),
   }),
 ]);
 
-export type NotifyMessage = u.PredicateType<typeof isNotifyMessage>;
+export type NotifyMessage = PredicateType<typeof isNotifyMessage>;
 
 const isID = is.UnionOf([
   is.Number,
@@ -33,12 +33,12 @@ export const isRequestMessage = is.IntersectionOf([
   }),
 ]);
 
-export type RequestMessage = u.PredicateType<typeof isRequestMessage>;
+export type RequestMessage = PredicateType<typeof isRequestMessage>;
 
 const isResponseError = is.ObjectOf({
   code: is.Number,
   message: is.String,
-  data: is.OptionalOf(is.UnionOf([
+  data: as.Optional(is.UnionOf([
     is.String,
     is.Number,
     is.Boolean,
@@ -51,15 +51,15 @@ export const isResponseMessage = is.IntersectionOf([
   isMessage,
   is.ObjectOf({
     id: isID,
-    result: is.OptionalOf(is.UnionOf([
+    result: as.Optional(is.UnionOf([
       is.String,
       is.Number,
       is.Boolean,
       isArrayOrObject,
       is.Null,
     ])),
-    error: is.OptionalOf(isResponseError),
+    error: as.Optional(isResponseError),
   }),
 ]);
 
-export type ResponseMessage = u.PredicateType<typeof isResponseMessage>;
+export type ResponseMessage = PredicateType<typeof isResponseMessage>;

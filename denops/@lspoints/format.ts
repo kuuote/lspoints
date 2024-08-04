@@ -1,7 +1,7 @@
 import { Denops } from "../lspoints/deps/denops.ts";
 import { LSP } from "../lspoints/deps/lsp.ts";
 import { deadline } from "../lspoints/deps/std/async.ts";
-import { u } from "../lspoints/deps/unknownutil.ts";
+import { assert, is } from "../lspoints/deps/unknownutil.ts";
 import { BaseExtension, Lspoints } from "../lspoints/interface.ts";
 import {
   applyTextEdits,
@@ -11,11 +11,11 @@ export class Extension extends BaseExtension {
   initialize(denops: Denops, lspoints: Lspoints) {
     lspoints.defineCommands("format", {
       execute: async (bufnr: unknown, timeout = 5000, selector?: unknown) => {
-        u.assert(timeout, u.isNumber);
+        assert(timeout, is.Number);
         let clients = lspoints.getClients(Number(bufnr)).filter((c) =>
           c.serverCapabilities.documentFormattingProvider != null
         );
-        if (u.isString(selector)) {
+        if (is.String(selector)) {
           clients = clients.filter((c) => c.name === selector);
         }
 

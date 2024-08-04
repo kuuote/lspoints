@@ -1,4 +1,4 @@
-import { Denops } from "https://deno.land/x/lspoints@v0.0.7/deps/denops.ts";
+import { Denops } from "jsr:@denops/std@7.0.0";
 import {
   BaseExtension,
   Lspoints,
