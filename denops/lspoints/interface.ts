@@ -1,12 +1,23 @@
-import { PatchableObjectBox } from "./box.ts";
-import { Denops } from "./deps/denops.ts";
-import { LSP } from "./deps/lsp.ts";
-import { as, is, PredicateType } from "./deps/unknownutil.ts";
-import { ArrayOrObject } from "./jsonrpc/message.ts";
+import type { PatchableObjectBox } from "./box.ts";
+import type { Denops } from "./deps/denops.ts";
+import type { LSP } from "./deps/lsp.ts";
+import { as, is, type Predicate } from "./deps/unknownutil.ts";
 
 type Promisify<T> = T | Promise<T>;
 
-export const isStartOptions = is.ObjectOf({
+type ArrayOrObject = Array<unknown> | Record<string, unknown>;
+
+export type StartOptions = {
+  cmd?: string[];
+  cmdOptions?: Record<string, unknown>;
+  initializationOptions?: Record<string, unknown>;
+  settings?: Record<string, unknown>;
+  params?: Record<string, unknown>;
+  rootPath?: string;
+  rootUri?: string;
+};
+
+export const isStartOptions: Predicate<StartOptions> = is.ObjectOf({
   cmd: as.Optional(is.ArrayOf(is.String)),
   cmdOptions: as.Optional(is.RecordOf(is.Unknown)),
   initializationOptions: as.Optional(is.Record),
@@ -15,8 +26,6 @@ export const isStartOptions = is.ObjectOf({
   rootPath: as.Optional(is.String),
   rootUri: as.Optional(is.String),
 });
-
-export type StartOptions = PredicateType<typeof isStartOptions>;
 
 export type Client = {
   name: string;
