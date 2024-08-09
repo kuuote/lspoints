@@ -1,0 +1,10 @@
+{
+  "exports": "./denops/lspoints/interface.ts",
+  "lock": false,
+  "name": "@kuuote/lspoints",
+  "tasks": {
+    "check": "deno fmt --check denops && deno lint && deno test -A",
+    "fmt": "deno fmt denops"
+  },
+  "version": "0.0.1-rc.1"
+}
