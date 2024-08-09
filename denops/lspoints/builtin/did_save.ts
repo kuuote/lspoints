@@ -1,5 +1,5 @@
-import { autocmd, Denops } from "../deps/denops.ts";
-import { BaseExtension, Lspoints } from "../interface.ts";
+import { autocmd, type Denops } from "../deps/denops.ts";
+import { BaseExtension, type Lspoints } from "../interface.ts";
 
 export class Extension extends BaseExtension {
   async initialize(denops: Denops, lspoints: Lspoints) {

@@ -1,7 +1,7 @@
-import { Denops } from "./deps/denops.ts";
-import { LSP } from "./deps/lsp.ts";
-import { Settings, StartOptions } from "./interface.ts";
-import { JsonRpcClient, LogHandler } from "./jsonrpc/jsonrpc_client.ts";
+import type { Denops } from "./deps/denops.ts";
+import type { LSP } from "./deps/lsp.ts";
+import type { Settings, StartOptions } from "./interface.ts";
+import { JsonRpcClient, type LogHandler } from "./jsonrpc/jsonrpc_client.ts";
 import { version } from "./version.ts";
 
 export type ClientOptions = {

@@ -1,7 +1,7 @@
 import { loadBuiltins } from "./builtins.ts";
-import { autocmd, Denops, Entrypoint } from "./deps/denops.ts";
+import { autocmd, type Denops, type Entrypoint } from "./deps/denops.ts";
 import { as, assert, is } from "./deps/unknownutil.ts";
-import { isStartOptions, Settings } from "./interface.ts";
+import { isStartOptions, type Settings } from "./interface.ts";
 import { isArrayOrObject } from "./jsonrpc/message.ts";
 import { Lspoints } from "./lspoints.ts";
 

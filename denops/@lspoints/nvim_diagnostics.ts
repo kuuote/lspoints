@@ -1,6 +1,6 @@
-import { Denops } from "../lspoints/deps/denops.ts";
-import { LSP } from "../lspoints/deps/lsp.ts";
-import { BaseExtension, Lspoints } from "../lspoints/interface.ts";
+import type { Denops } from "../lspoints/deps/denops.ts";
+import type { LSP } from "../lspoints/deps/lsp.ts";
+import { BaseExtension, type Lspoints } from "../lspoints/interface.ts";
 
 export class Extension extends BaseExtension {
   initialize(denops: Denops, lspoints: Lspoints) {

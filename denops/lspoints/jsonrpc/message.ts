@@ -1,4 +1,4 @@
-import { as, is, PredicateType } from "../deps/unknownutil.ts";
+import { as, is, type PredicateType } from "../deps/unknownutil.ts";
 
 export const isArrayOrObject = is.UnionOf([
   is.Array,

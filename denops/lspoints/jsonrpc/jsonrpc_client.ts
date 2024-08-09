@@ -5,8 +5,8 @@ import {
   isNotifyMessage,
   isRequestMessage,
   isResponseMessage,
-  NotifyMessage,
-  RequestMessage,
+  type NotifyMessage,
+  type RequestMessage,
 } from "./message.ts";
 
 type Promisify<T> = T | Promise<T>;

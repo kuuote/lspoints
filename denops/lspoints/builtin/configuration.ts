@@ -1,6 +1,6 @@
-import { Denops } from "../deps/denops.ts";
+import type { Denops } from "../deps/denops.ts";
 import { as, assert, is, maybe } from "../deps/unknownutil.ts";
-import { BaseExtension, Lspoints } from "../interface.ts";
+import { BaseExtension, type Lspoints } from "../interface.ts";
 
 function getSettings(
   lspoints: Lspoints,

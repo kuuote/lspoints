@@ -1,6 +1,6 @@
-import { Denops } from "../deps/denops.ts";
-import { LSP } from "../deps/lsp.ts";
-import { BaseExtension, Lspoints } from "../interface.ts";
+import type { Denops } from "../deps/denops.ts";
+import type { LSP } from "../deps/lsp.ts";
+import { BaseExtension, type Lspoints } from "../interface.ts";
 
 type FlatDiagnostic = {
   client: string;

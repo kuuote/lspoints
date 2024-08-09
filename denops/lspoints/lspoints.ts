@@ -1,11 +1,11 @@
 import { PatchableObjectBox } from "./box.ts";
 import { LanguageClient } from "./client.ts";
 import { Lock } from "./deps/async.ts";
-import { autocmd, Denops } from "./deps/denops.ts";
+import { autocmd, type Denops } from "./deps/denops.ts";
 import { deadline } from "./deps/std/async.ts";
 import { deepMerge } from "./deps/std/deep_merge.ts";
 import { stdpath } from "./deps/std/path.ts";
-import {
+import type {
   AttachCallback,
   BaseExtension,
   Client,
@@ -15,7 +15,7 @@ import {
   Settings,
   StartOptions,
 } from "./interface.ts";
-import { ArrayOrObject } from "./jsonrpc/message.ts";
+import type { ArrayOrObject } from "./jsonrpc/message.ts";
 
 const lock = new Lock(null);
 

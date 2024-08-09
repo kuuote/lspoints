@@ -1,7 +1,7 @@
-import { Denops } from "jsr:@denops/std@7.0.0";
+import type { Denops } from "jsr:@denops/std@7.0.0";
 import {
   BaseExtension,
-  Lspoints,
+  type Lspoints,
 } from "https://deno.land/x/lspoints@v0.0.7/interface.ts";
 
 // place to {runtimepath}/denops/@lspoints/config.ts

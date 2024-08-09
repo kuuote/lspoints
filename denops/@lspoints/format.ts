@@ -1,8 +1,8 @@
-import { Denops } from "../lspoints/deps/denops.ts";
-import { LSP } from "../lspoints/deps/lsp.ts";
+import type { Denops } from "../lspoints/deps/denops.ts";
+import type { LSP } from "../lspoints/deps/lsp.ts";
 import { deadline } from "../lspoints/deps/std/async.ts";
 import { assert, is } from "../lspoints/deps/unknownutil.ts";
-import { BaseExtension, Lspoints } from "../lspoints/interface.ts";
+import { BaseExtension, type Lspoints } from "../lspoints/interface.ts";
 import {
   applyTextEdits,
 } from "https://deno.land/x/denops_lsputil@v0.9.3/mod.ts";
