@@ -33,7 +33,7 @@ export class Extension extends BaseExtension {
               uri: "file://" + path,
             },
             options: {
-              tabSize: Number(await denops.eval("&l:shiftwidth")),
+              tabSize: Number(await denops.call("shiftwidth")),
               insertSpaces: Boolean(await denops.eval("&l:expandtab")),
             },
           },
