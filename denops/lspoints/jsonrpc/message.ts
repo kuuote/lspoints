@@ -2,7 +2,7 @@ import { as, is, type PredicateType } from "../deps/unknownutil.ts";
 
 export const isArrayOrObject = is.UnionOf([
   is.Array,
-  is.Record,
+  is.RecordOf(is.Any),
 ]);
 
 export type ArrayOrObject = PredicateType<typeof isArrayOrObject>;

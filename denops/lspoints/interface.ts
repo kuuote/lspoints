@@ -5,7 +5,8 @@ import { as, is, type Predicate } from "./deps/unknownutil.ts";
 
 type Promisify<T> = T | Promise<T>;
 
-type ArrayOrObject = Array<unknown> | Record<string, unknown>;
+// deno-lint-ignore no-explicit-any
+type ArrayOrObject = Array<unknown> | Record<PropertyKey, any>;
 
 export type StartOptions = {
   cmd?: string[];
