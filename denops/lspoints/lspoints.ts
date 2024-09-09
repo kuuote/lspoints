@@ -49,7 +49,7 @@ export class Lspoints {
   clients: Record<string, LanguageClient> = {};
   clientIDs: Record<number, LanguageClient> = {};
   settings: PatchableObjectBox<Settings> = new PatchableObjectBox({
-    clientCapabilites: {
+    clientCapabilities: {
       general: {
         positionEncodings: [
           "utf-16",

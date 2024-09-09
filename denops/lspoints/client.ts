@@ -91,7 +91,7 @@ export class LanguageClient {
           version,
         },
         processId: Deno.pid,
-        capabilities: settings.clientCapabilites,
+        capabilities: settings.clientCapabilities,
         initializationOptions: this.options.initializationOptions ?? {},
         rootUri,
       } satisfies LSP.InitializeParams,
