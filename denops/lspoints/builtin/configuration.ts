@@ -1,6 +1,7 @@
 import type { Denops } from "../deps/denops.ts";
 import { as, assert, is, maybe } from "../deps/unknownutil.ts";
 import { BaseExtension, type Lspoints } from "../interface.ts";
+import { omit } from "jsr:@std/collections@~1.0.0/omit";
 
 function getSettings(
   lspoints: Lspoints,
@@ -15,15 +16,23 @@ function getSettings(
 }
 
 export class Extension extends BaseExtension {
+  #notificationAlreadySent: Record<string, boolean> = {};
+
   initialize(_denops: Denops, lspoints: Lspoints) {
     lspoints.subscribeAttach(async (clientName) => {
       const settings = getSettings(lspoints, clientName);
       if (settings == null) {
         return;
       }
+
+      if (this.#notificationAlreadySent[clientName]) {
+        return;
+      }
+
       await lspoints.notify(clientName, "workspace/didChangeConfiguration", {
-        settings,
+        settings: omit(settings, ["clientCapabilities"]),
       });
+      this.#notificationAlreadySent[clientName] = true;
     });
     lspoints.subscribeRequest(
       "workspace/configuration",
