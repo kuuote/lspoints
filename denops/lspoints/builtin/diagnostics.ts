@@ -43,6 +43,9 @@ export class Extension extends BaseExtension {
         }
       },
     );
+    lspoints.subscribeDetach((clientName) => {
+      this.diagnostics.delete(clientName);
+    });
     lspoints.defineCommands("lspoints.diagnostics", {
       get: () => this.diagnostics,
       getFlat: () => {

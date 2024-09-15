@@ -1,7 +1,7 @@
 import { PatchableObjectBox } from "./box.ts";
 import { LanguageClient } from "./client.ts";
 import { Lock } from "./deps/async.ts";
-import { autocmd, type Denops } from "./deps/denops.ts";
+import { autocmd, batch, type Denops } from "./deps/denops.ts";
 import { deadline } from "./deps/std/async.ts";
 import { deepMerge } from "./deps/std/deep_merge.ts";
 import { stdpath } from "./deps/std/path.ts";
@@ -10,6 +10,7 @@ import type {
   BaseExtension,
   Client,
   Command,
+  DetachCallback,
   NotifyCallback,
   RequestCallback,
   Settings,
@@ -32,6 +33,7 @@ function transformClient(client: LanguageClient): Client {
     notify: client.rpcClient.notify.bind(client.rpcClient),
     request: client.rpcClient.request.bind(client.rpcClient),
     serverCapabilities: client.serverCapabilities,
+    getAttachedBufNrs: client.getAttachedBufNrs.bind(client),
     getUriFromBufNr: client.getUriFromBufNr.bind(client),
     getDocumentVersion: client.getDocumentVersion.bind(client),
     isAttached: client.isAttached.bind(client),
@@ -44,6 +46,7 @@ function transformClient(client: LanguageClient): Client {
 export class Lspoints {
   commands: Record<string, Record<string, Command>> = {};
   attachHandlers: Array<AttachCallback> = [];
+  detachHandlers: Array<DetachCallback> = [];
   notifyHandlers: Record<string, Array<NotifyCallback>> = {};
   requestHandlers: Record<string, Array<RequestCallback>> = {};
   clients: Record<string, LanguageClient> = {};
@@ -151,6 +154,27 @@ export class Lspoints {
               return result;
             }
           }
+        });
+        client.rpcClient.detachHandlers.push(async () => {
+          for (const handler of this.detachHandlers) {
+            await handler(name);
+          }
+
+          // Clear autocmds internally used from buffers where no other LSPs
+          // are attached.
+          await batch(denops, async (denops) => {
+            const bufnrs = client.getAttachedBufNrs().filter((bufnr) => {
+              return this.getClients(bufnr).length <= 1;
+            });
+            for (const bufnr of bufnrs) {
+              await autocmd.remove(denops, "*", `<buffer=${bufnr}>`, {
+                group: "lspoints.internal",
+              });
+            }
+          });
+          await autocmd.emit(denops, "User", `LspointsDetach:${name}`);
+          delete this.clients[name];
+          delete this.clientIDs[client.id];
         });
       });
     }
@@ -291,6 +315,10 @@ export class Lspoints {
 
   subscribeAttach(callback: AttachCallback) {
     (this.attachHandlers = this.attachHandlers ?? []).push(callback);
+  }
+
+  subscribeDetach(callback: DetachCallback) {
+    (this.detachHandlers = this.detachHandlers ?? []).push(callback);
   }
 
   subscribeNotify(
