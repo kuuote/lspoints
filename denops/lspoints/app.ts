@@ -35,6 +35,10 @@ export const main: Entrypoint = async (denops: Denops) => {
       assert(bufNr, is.Number);
       await lspoints.attach(denops, id, bufNr);
     },
+    detach(id: unknown) {
+      assert(id, isNumberOrString);
+      lspoints.detach(id);
+    },
     async notifyChange(
       bufNr: unknown,
       uri: unknown,

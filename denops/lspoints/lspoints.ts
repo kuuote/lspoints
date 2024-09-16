@@ -215,6 +215,16 @@ export class Lspoints {
     await autocmd.emit(denops, "User", `LspointsAttach:${name}`);
   }
 
+  detach(id: string | number) {
+    const client = this.#getClient(id);
+    if (!client) {
+      throw Error(`client "${id}" is not started`);
+    }
+    client.kill();
+    // detachHandler removes this client from this.clients and this.clientIDs.
+    // We don't need to handle these here.
+  }
+
   async notifyChange(
     bufNr: number,
     uri: string,
