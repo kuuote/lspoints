@@ -3,9 +3,7 @@ import type { LSP } from "../lspoints/deps/lsp.ts";
 import { deadline } from "../lspoints/deps/std/async.ts";
 import { assert, is } from "../lspoints/deps/unknownutil.ts";
 import { BaseExtension, type Lspoints } from "../lspoints/interface.ts";
-import {
-  applyTextEdits,
-} from "https://deno.land/x/denops_lsputil@v0.9.3/mod.ts";
+import { applyTextEdits } from "jsr:@uga-rosa/denops-lsputil@^0.9.4/text_edit";
 
 export class Extension extends BaseExtension {
   initialize(denops: Denops, lspoints: Lspoints) {
