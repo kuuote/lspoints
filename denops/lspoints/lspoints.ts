@@ -188,7 +188,7 @@ export class Lspoints {
         );
       },
     );
-    await autocmd.emit(denops, "User", `LspointsAttach:${name}`);
+    await autocmd.emit(denops, "User", `LspointsAttach:${name}:${bufNr}`);
   }
 
   async notifyChange(
