@@ -97,6 +97,12 @@ lspoints#request({name}, {method}, [{params}])
 	{name} で示される言語サーバーに {method} のリクエストを、省略可能な
 	{params} を引数にして送信し、結果を返します。
 
+                                                    *lspoints#request_async()*
+lspoints#request_async({name}, {method}, [{params}])
+	{name} で示される言語サーバーに {method} のリクエストを、{params} を
+	引数にして送信し、結果を引数に {success} か {failure} に渡した
+	コールバックを呼び出します。
+
 ==============================================================================
 VARIABLE                                                   *lspoints-variable*
 
