@@ -29,7 +29,7 @@ function lspoints#notify(name, method, params = {}) abort
   call lspoints#denops#notify('notify', [a:name, a:method, a:params])
 endfunction
 
-function lspoints#request_async(name, method, params = {}, success, failure) abort
+function lspoints#request_async(name, method, params, success, failure) abort
   call lspoints#denops#request_async('request', [a:name, a:method, a:params], success, failure)
 endfunction
 
