@@ -72,6 +72,10 @@ lspoints#attach({name}, [{options}])
 	使用されます。立ち上がっている場合は無視されるため、省略も可能です。
 	|lspoints#start()| に渡されます。
 
+                                                           *lspoints#detach()*
+lspoints#detach({name})
+	{name} で示される言語サーバーのアタッチを解除します。
+
                                                   *lspoints#load_extensions()*
 lspoints#load_extensions({pathes})
 	{pathes} に指定されたリストを|g:lspoints#extensions|に追加し、

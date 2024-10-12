@@ -18,6 +18,10 @@ function lspoints#attach(name, options = {}) abort
   call lspoints#denops#notify('attach', [a:name, bufnr])
 endfunction
 
+function lspoints#detach(name) abort
+  call lspoints#denops#notify('detach', [a:name])
+endfunction
+
 function lspoints#load_extensions(pathes) abort
   call extend(g:lspoints#extensions, a:pathes)
   if denops#plugin#is_loaded('lspoints')

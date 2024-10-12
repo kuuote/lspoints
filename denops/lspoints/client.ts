@@ -111,6 +111,10 @@ export class LanguageClient {
     }
   }
 
+  getAttachedBufNrs(): number[] {
+    return Object.keys(this.#attachedBuffers).map(Number);
+  }
+
   getUriFromBufNr(bufNr: number) {
     return this.#attachedBuffers[bufNr] ?? "";
   }

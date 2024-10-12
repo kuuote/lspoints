@@ -38,6 +38,7 @@ export type Client = {
     options?: { signal: AbortSignal },
   ) => Promise<unknown>;
   serverCapabilities: LSP.ServerCapabilities;
+  getAttachedBufNrs(): number[];
   getUriFromBufNr(bufnr: number): string;
   getDocumentVersion(bufnr: number): number;
   isAttached(bufnr: number): boolean;
@@ -52,6 +53,8 @@ export type Settings = {
 };
 
 export type AttachCallback = (clientName: string) => Promisify<void>;
+
+export type DetachCallback = (clientName: string) => Promisify<void>;
 
 export type NotifyCallback = (
   clientName: string,
@@ -86,6 +89,8 @@ export interface Lspoints {
   ): Promise<unknown>;
 
   subscribeAttach(callback: AttachCallback): void;
+
+  subscribeDetach(callback: DetachCallback): void;
 
   subscribeNotify(
     method: string,
