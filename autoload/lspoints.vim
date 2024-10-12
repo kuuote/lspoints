@@ -30,7 +30,7 @@ function lspoints#notify(name, method, params = {}) abort
 endfunction
 
 function lspoints#request_async(name, method, params, success, failure) abort
-  call lspoints#denops#request_async('request', [a:name, a:method, a:params], success, failure)
+  call lspoints#denops#request_async('request', [a:name, a:method, a:params], a:success, a:failure)
 endfunction
 
 " sync method
