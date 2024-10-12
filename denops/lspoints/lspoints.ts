@@ -174,7 +174,7 @@ export class Lspoints {
       await client.attach(bufNr);
     });
     for (const handler of this.attachHandlers) {
-      await handler(name);
+      await handler(name, bufNr);
     }
     await autocmd.group(
       denops,
