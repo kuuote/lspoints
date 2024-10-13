@@ -51,7 +51,10 @@ export type Settings = {
   tracePath?: string;
 };
 
-export type AttachCallback = (clientName: string) => Promisify<void>;
+export type AttachCallback = (
+  clientName: string,
+  bufnr: number,
+) => Promisify<void>;
 
 export type NotifyCallback = (
   clientName: string,

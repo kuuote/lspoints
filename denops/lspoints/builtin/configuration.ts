@@ -16,7 +16,7 @@ function getSettings(
 
 export class Extension extends BaseExtension {
   initialize(_denops: Denops, lspoints: Lspoints) {
-    lspoints.subscribeAttach(async (clientName) => {
+    lspoints.subscribeAttach(async (clientName, _bufnr) => {
       const settings = getSettings(lspoints, clientName);
       if (settings == null) {
         return;
