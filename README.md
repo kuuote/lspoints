@@ -91,6 +91,7 @@ The example is just a combined version of the above code.
 
 ```vim
 let g:lspoints#extensions = ['nvim_diagnostics', 'format']
+
 function s:attach_denols() abort
     call lspoints#attach('denols', #{
     \   cmd: ['deno', 'lsp'],
