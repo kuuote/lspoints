@@ -5,7 +5,7 @@ Asynchronous LSP Gateway Plugin powered by denops.vim
 
 > [!WARNING]
 > 
-> As it is made for study, it may move strangely or break suddenly.
+> As it is made for study, it may behave weird or break suddenly.
 >
 
 ## Installation
