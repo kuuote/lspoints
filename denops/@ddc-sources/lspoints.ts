@@ -1,9 +1,9 @@
 import {
   BaseSource,
   type GatherArguments,
-} from "https://deno.land/x/ddc_vim@v4.3.1/base/source.ts";
-import type { Item } from "https://deno.land/x/ddc_vim@v4.3.1/types.ts";
-import * as u from "https://deno.land/x/unknownutil@v3.16.3/mod.ts";
+} from "jsr:@shougo/ddc-vim@^7.0.0/source";
+import type { Item } from "jsr:@shougo/ddc-vim@^7.0.0/types";
+import * as u from "jsr:@core/unknownutil@^4.3.0";
 import type * as LSPTypes from "npm:vscode-languageserver-types@3.17.5";
 
 type Never = Record<never, never>;
