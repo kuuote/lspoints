@@ -35,6 +35,10 @@ export const main: Entrypoint = async (denops: Denops) => {
       assert(bufNr, is.Number);
       await lspoints.attach(denops, id, bufNr);
     },
+    detach(id: unknown) {
+      assert(id, isNumberOrString);
+      lspoints.detach(id);
+    },
     async notifyChange(
       bufNr: unknown,
       uri: unknown,
@@ -89,6 +93,7 @@ export const main: Entrypoint = async (denops: Denops) => {
   await autocmd.group(denops, "lspoints.internal", (helper) => {
     helper.remove("*");
     helper.define("User", "LspointsAttach:*", ":");
+    helper.define("User", "LspointsDetach:*", ":");
   });
   await loadBuiltins(denops, lspoints);
   await denops.dispatcher.loadExtensions(

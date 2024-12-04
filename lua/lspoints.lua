@@ -20,4 +20,10 @@ function M.notify(msg)
   vim.diagnostic.set(namespace, msg.bufnr, msg.diagnostics)
 end
 
+function M.reset_diagnostics(client)
+  if namespaces[client] ~= nil then
+    vim.diagnostic.reset(namespaces[client])
+  end
+end
+
 return M

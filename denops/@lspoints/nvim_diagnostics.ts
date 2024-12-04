@@ -32,5 +32,11 @@ export class Extension extends BaseExtension {
         });
       },
     );
+    lspoints.subscribeDetach(async (client) => {
+      await denops.call(
+        "luaeval",
+        `require('lspoints').reset_diagnostics('${client}')`,
+      );
+    });
   }
 }

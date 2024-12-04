@@ -61,6 +61,7 @@ export class JsonRpcClient {
   requestHandlers: Array<
     (msg: RequestMessage) => Promisify<unknown | undefined>
   > = [];
+  detachHandlers: Array<() => Promisify<void>> = [];
   logger = new Logger();
 
   constructor(
@@ -74,6 +75,11 @@ export class JsonRpcClient {
       stdout: "piped",
       stderr: "piped",
     }).spawn();
+    this.#process.status.finally(async () => {
+      for (const handler of this.detachHandlers) {
+        await handler();
+      }
+    });
     this.#process.stdout
       .pipeThrough(new JsonRpcStream())
       .pipeTo(
