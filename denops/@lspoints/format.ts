@@ -5,14 +5,16 @@ import { assert, is } from "../lspoints/deps/unknownutil.ts";
 import { BaseExtension, type Lspoints } from "../lspoints/interface.ts";
 import {
   applyTextEdits,
-} from "https://deno.land/x/denops_lsputil@v0.9.3/mod.ts";
+  uriFromBufnr,
+} from "jsr:@uga-rosa/denops-lsputil@^0.10.1";
 
 export class Extension extends BaseExtension {
   initialize(denops: Denops, lspoints: Lspoints) {
     lspoints.defineCommands("format", {
       execute: async (bufnr: unknown, timeout = 5000, selector?: unknown) => {
         assert(timeout, is.Number);
-        let clients = lspoints.getClients(Number(bufnr)).filter((c) =>
+        assert(bufnr, is.Number);
+        let clients = lspoints.getClients(bufnr).filter((c) =>
           c.serverCapabilities.documentFormattingProvider != null
         );
         if (is.String(selector)) {
@@ -23,14 +25,12 @@ export class Extension extends BaseExtension {
           throw Error("何のクライアントも選ばれてないわよ");
         }
 
-        const path = String(await denops.call("expand", "%:p"));
-
         const resultPromise = lspoints.request(
           clients[0].name,
           "textDocument/formatting",
           {
             textDocument: {
-              uri: "file://" + path,
+              uri: await uriFromBufnr(denops, bufnr),
             },
             options: {
               tabSize: Number(await denops.call("shiftwidth")),
@@ -49,11 +49,7 @@ export class Extension extends BaseExtension {
         if (result == null) {
           return;
         }
-        await applyTextEdits(
-          denops,
-          Number(bufnr),
-          result,
-        );
+        await applyTextEdits(denops, bufnr, result);
       },
     });
   }
